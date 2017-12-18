@@ -26,6 +26,7 @@ class Deck:
             rank_count += rank_count
             suit_count += suit_count
 
+    #logic to play game
     def Game():
         #output greeting text
 
@@ -60,18 +61,40 @@ class Deck:
             print("Wins: {}").format(players[i].wins)
             print("Losses: {}").format(players[i].losses)
     
+    #plays one round
     def PlayRound():
         #draw cards
-
+        for i in range((len(players)*2)+2):
+            cards_on_table.append(self.DrawCard())
+    
         #show dealer cards, the 0th and 1st elements in cards_on_table
         #only one card is face up
+        print("Dealer's cards: ")
+        self.PrintCard(cards_on_table[0])
+        print("[HIDDEN]")
 
         #show player cards, both face up
+        for i in range(len(players)):
+            print("Player {}'s cards: ").format(i)
+            for j in range(2,5):
+                self.PrintCard(cards_on_table[j+i])
 
         #ask player for hit, stand, or forfeit
-        dummy_var = 2
         #if hit, draw card
         #else do nothing
 
         #if bust, increment lose and return
         #else increment wins, ect
+
+    def PrintCard(index):
+        dummy_var = 0
+
+    #returns the index of a random card out of the cards_in_deck
+    #if card is not marked as in the deck in play, another index is generated
+    def DrawCard():
+        random.seed(a=None, version=2)
+        condition = False
+        while (not condition):
+            i = random.range(52)
+            condition = cards_on_table[i].in_deck
+        return i
