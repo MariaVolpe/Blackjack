@@ -117,16 +117,17 @@ class Deck:
 
     #print card at given index in deck
     def PrintCard(index):
-        dummy_var = 0
+        card_name = {14 : 'King', 13 : 'Queen', 12: 'Jack', 11: 'Ace'}
+        suit_name = {4 : 'Hearts', 3 : 'Queen', 2: 'Jack', 1: 'Diamonds'}
+        if cards_on_table[index].rank > 10
+            print("{} of {}").format(rank_name[cards_on_table[index].rank], suit_name[cards_on_table[index].suit])
+        else
+            print("{} of {}").format(cards_on_table[index].rank, suit_name[cards_on_table[index].suit])
 
+    #total the values of a player's hand
     def TotalCards():
         dummy_var = 0
 
-    def Hit():
-        dummy_var = 0
-
-    def Stand():
-        dummy_var = 0
     #returns the index of a random card out of the cards_in_deck
     #if card is not marked as in the deck in play, another index is generated
     def DrawCard():
