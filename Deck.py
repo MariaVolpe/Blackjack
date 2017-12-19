@@ -16,7 +16,7 @@ class Deck:
         suit_count = 1
         for i in range(52):
             if rank_count >= 14:
-                rank_count = 1
+                rank_count = 2
             if suit_count >= 4:
                 suit_count = 1
 
