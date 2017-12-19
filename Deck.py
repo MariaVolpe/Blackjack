@@ -75,20 +75,58 @@ class Deck:
 
         #show player cards, both face up
         for i in range(len(players)):
-            print("Player {}'s cards: ").format(i)
+            print("Player {}'s cards: ").format(i+1)
             for j in range(2,5):
                 self.PrintCard(cards_on_table[j+i])
 
-        #ask player for hit, stand, or forfeit
-        #if hit, draw card
-        #else do nothing
+        #ask player for hit or stand
+        #todo forfeit ?
+        #todo error checking on input(capital letters)
+        for i in range(len(players)):
+            hit_count = 0
+            action = raw_input("Player {}'s turn. Hit or stand?").format(i+1)
+            while action != "hit" or action != "stand":
+                action = raw_input("Not a valid action. Hit or stand?").format(i+1)
+            
+            while action == "hit":
+                hit_count += 1
+                cards_on_table.append(self.DrawCard())
+                total = self.TotalCards()
+                if total > 21:
+                    #bust
+                    #increment lose and break
+                    break
+                if total == 21:
+                    #blackjack
+                    break
+                action = raw_input("Hit again, or stand?").format(i+1)
+                while action != "hit" or action != "stand":
+                    action = raw_input("Not a valid action. Hit or stand?").format(i+1)
 
-        #if bust, increment lose and return
-        #else increment wins, ect
+            #action here must be stand. todo
+            if action == "stand":
+                self.Stand()
 
+            if total > 21:
+                dummy_var = 0
+                #bust
+                #increment lose and return
+            elif total == 21:
+                #blackjack
+                dummy_var = 0
+
+    #print card at given index in deck
     def PrintCard(index):
         dummy_var = 0
 
+    def TotalCards():
+        dummy_var = 0
+
+    def Hit():
+        dummy_var = 0
+
+    def Stand():
+        dummy_var = 0
     #returns the index of a random card out of the cards_in_deck
     #if card is not marked as in the deck in play, another index is generated
     def DrawCard():
