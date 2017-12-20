@@ -79,6 +79,36 @@ class Deck:
             for j in range(2):
                 cards_players.PrintCard(players[i].hand[j])
 
+        #check if dealer has blackjack
+        total = self.TotalCards(CPU_dealer.hand)
+        if total == 21:
+            #blackjack
+            print("The dealer has Blackjack!")
+
+            print("Dealer's cards: ")
+            for j in range(2):
+                cards_players.PrintCard(CPU_dealer.hand[j])
+            player_win == 0
+            winning_player = []
+            #check if any players also have blackjack. if not, end the round
+            for i in range(len(players)):
+                total = self.TotalCards(players[i].hand)
+                if total == 21:
+                    print("Player {} also has Blackjack!").format(i+1)
+                    player_win += 1
+                    winning_player.append(i)
+                else:
+                    print("Player {} loses their bet.").format(i+1)
+
+            if player_win == 0:
+                CPU_dealer[i].wins += 1
+
+            elif player_win == 1:
+                print("Player {} and the dealer have tied.").format(player[winning_player])
+            else:
+                print("All players and the dealer have tied.")
+                
+
         #ask player for hit or stand
         #todo forfeit ?
         #todo error checking on input(capital letters)
@@ -91,7 +121,7 @@ class Deck:
             while action == "hit":
                 hit_count += 1
                 player[i].hand.append(self.DrawCard())
-                total = self.TotalCards()
+                total = self.TotalCards(players[i].hand)
                 if total > 21:
                     #bust
                     #increment lose and break
@@ -103,21 +133,22 @@ class Deck:
                 while action != "hit" or action != "stand":
                     action = raw_input("Not a valid action. Hit or stand?").format(i+1)
 
-            #action here must be stand. todo
-            if action == "stand":
-                dummy_var = 0
+            #stand
+            total = self.TotalCards(players[i].hand)
 
+            #bust
+            #increment lose and return
             if total > 21:
-                dummy_var = 0
-                #bust
-                #increment lose and return
+                print("Bust!")
+                player[i].losses += 1
+                
             elif total == 21:
                 #blackjack
-                dummy_var = 0
-
+                print("Blackjack!")
+                player[i].wins += 1
 
     #total the values of a player's hand
-    def TotalCards(index):
+    def TotalCards(hand):
         dummy_var = 0
 
     #returns a random card out of the cards_in_deck
