@@ -15,7 +15,7 @@ class Cards:
         if card.rank > 10:
             print("{} of {}").format(rank_name[card.rank], suit_name[card.suit])
         else:
-            print("{} of {}").format(card.rank, card.suit)
+            print("{} of {}").format(card.rank, suit_name[card.suit])
 
 class Players:
     wins = 0

@@ -44,7 +44,6 @@ class Deck:
             self.PlayRound()
             keep_playing = raw_input("Play another round? (y/n)")
 
-
         #display score
 
         print("Thanks for playing!")
