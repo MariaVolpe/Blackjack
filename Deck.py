@@ -1,10 +1,8 @@
-import Cards
-import Players
 import random
+import cards_players
 
 class Deck:
     cards_in_deck=[]
-    cards_on_table=[]
     players=[]
 
     #constructor
@@ -64,20 +62,24 @@ class Deck:
     #plays one round
     def PlayRound():
         #draw cards
-        for i in range((len(players)*2)+2):
-            cards_on_table.append(self.DrawCard())
+        for i in range(2):
+            CPU_dealer.hand.append(self.DrawCard())
+
+        for i in range(len(players)):
+            for i in range(2):
+                players[i].hand.append(self.DrawCard())
     
-        #show dealer cards, the 0th and 1st elements in cards_on_table
+        #show dealer cards
         #only one card is face up
         print("Dealer's cards: ")
-        self.PrintCard(cards_on_table[0])
+        cards_players.PrintCard(CPU_dealer.hand[0])
         print("[HIDDEN]")
 
         #show player cards, both face up
         for i in range(len(players)):
             print("Player {}'s cards: ").format(i+1)
-            for j in range(2,5):
-                self.PrintCard(cards_on_table[j+i])
+            for j in range(2):
+                cards_players.PrintCard(players[i].hand[j])
 
         #ask player for hit or stand
         #todo forfeit ?
@@ -90,7 +92,7 @@ class Deck:
             
             while action == "hit":
                 hit_count += 1
-                cards_on_table.append(self.DrawCard())
+                player[i].hand.append(self.DrawCard())
                 total = self.TotalCards()
                 if total > 21:
                     #bust
@@ -105,7 +107,7 @@ class Deck:
 
             #action here must be stand. todo
             if action == "stand":
-                self.Stand()
+                dummy_var = 0
 
             if total > 21:
                 dummy_var = 0
@@ -115,25 +117,18 @@ class Deck:
                 #blackjack
                 dummy_var = 0
 
-    #print card at given index in deck
-    def PrintCard(index):
-        card_name = {14 : 'King', 13 : 'Queen', 12: 'Jack', 11: 'Ace'}
-        suit_name = {4 : 'Hearts', 3 : 'Queen', 2: 'Jack', 1: 'Diamonds'}
-        if cards_on_table[index].rank > 10
-            print("{} of {}").format(rank_name[cards_on_table[index].rank], suit_name[cards_on_table[index].suit])
-        else
-            print("{} of {}").format(cards_on_table[index].rank, suit_name[cards_on_table[index].suit])
+    
 
     #total the values of a player's hand
-    def TotalCards():
+    def TotalCards(index):
         dummy_var = 0
 
-    #returns the index of a random card out of the cards_in_deck
+    #returns a random card out of the cards_in_deck
     #if card is not marked as in the deck in play, another index is generated
     def DrawCard():
         random.seed(a=None, version=2)
         condition = False
         while (not condition):
             i = random.range(52)
-            condition = cards_on_table[i].in_deck
-        return i
+            condition = cards_in_deck[i].in_deck
+        return cards_in_deck[i]
