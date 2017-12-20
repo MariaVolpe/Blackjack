@@ -148,8 +148,27 @@ class Deck:
                 player[i].wins += 1
 
     #total the values of a player's hand
+    #todo: improve logic for handling aces
     def TotalCards(hand):
-        dummy_var = 0
+        total = 0
+        ace_count = 0
+        for i in hand:
+            #if ace, do not increment total but increment count of aces in hand
+            if hand[i].rank == 11:
+                ace_count += 1
+            #kings, queens, and jacks are all valued at 10
+            elif hand[i].rank > 11:
+                total += 10
+            else:
+                total += hand[i].rank
+
+        if ace_count > 0:
+            for j in range(ace_count):
+                if total + 11 >= 21:
+                    total += 11
+                else:
+                    total += 1
+        return total
 
     #returns a random card out of the cards_in_deck
     #if card is not marked as in the deck in play, another index is generated
