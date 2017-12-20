@@ -38,7 +38,6 @@ class Deck:
             new_player = Player.Player(player_name)
             players.append(new_player)
 
-
         #play rounds until player quits
         keep_playing = "y"
         while keep_playing == "y":
@@ -117,7 +116,6 @@ class Deck:
                 #blackjack
                 dummy_var = 0
 
-    
 
     #total the values of a player's hand
     def TotalCards(index):
