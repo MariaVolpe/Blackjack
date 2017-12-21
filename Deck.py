@@ -3,7 +3,8 @@ import cards_players
 
 #todo : print after stand
 #todo : make it actually random bc rn it doesnt work
-#todo : text fixes
+#todo : text fixes (even more)
+#why r there so many extra cards in each hand?
 
 class Deck:
     cards_in_deck = []
@@ -71,6 +72,7 @@ class Deck:
         for i in range(len(self.players)):
             for j in range(2):
                 self.players[i].hand.append(self.DrawCard())
+
     
         #show dealer cards
         #only one card is face up
@@ -82,8 +84,9 @@ class Deck:
         #show player cards, both face up
         for i in range(len(self.players)):
             print("Player {}'s cards: ".format(i+1) )
-            for j in range(2):
-                self.players[i].hand[j].PrintCard()
+            for j in self.players[i].hand:
+                j.PrintCard()
+                print("j:{}".format(j))
             print("")
 
         #check if dealer has blackjack
@@ -93,8 +96,8 @@ class Deck:
             print("The dealer has Blackjack!")
 
             print("Dealer's cards: ")
-            for j in range(2):
-                self.CPU_dealer.hand[j].PrintCard()
+            for j in self.CPU_dealer.hand
+                j.PrintCard()
             player_win == 0
             winning_player = []
             #check if any players also have blackjack. if not, end the round
@@ -127,10 +130,16 @@ class Deck:
             
             while action == "hit":
                 #todo : print cards after each hit
-
                 hit_count += 1
                 self.players[i].hand.append(self.DrawCard())
                 total = self.TotalCards(self.players[i].hand)
+
+                print("Player {}'s cards: ".format(i+1) )
+                for j in self.players[i].hand:
+                    j.PrintCard()
+                print("")
+
+
                 if total > 21:
                     #bust
                     #increment lose and break
