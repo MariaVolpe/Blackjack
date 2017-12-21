@@ -1,6 +1,10 @@
 import random
 import cards_players
 
+#todo : print after stand
+#todo : make it actually random bc rn it doesnt work
+#todo : text fixes
+
 class Deck:
     cards_in_deck = []
     players = []
@@ -34,7 +38,8 @@ class Deck:
         #todo: validate user input 
         
         for i in range(int(player_count)):
-            player_name = input("Please enter the name of Player {} :".format(i+1) )
+            player_name = input("Please enter the name of Player {}: ".format(i+1) )
+            print("")
             new_player = cards_players.Players(player_name)
             self.players.append(new_player)
 
@@ -42,18 +47,18 @@ class Deck:
         keep_playing = "y"
         while keep_playing == "y":
             self.PlayRound()
-            keep_playing = input("Play another round? (y/n)")
+            keep_playing = input("Play another round? (y/n) ")
 
         #display score
 
         print("Thanks for playing!")
-        print("Final score:")
+        print("Final score: ")
         print("Dealer: ")
         print("Wins: {}".format(self.CPU_dealer.wins) )
         print("Losses: {}".format(self.CPU_dealer.losses) )
 
         for i in range(int(player_count)):
-            print("Player {}: ".format(i+1) )
+            print("Player {}:".format(i+1) )
             print("Wins: {}".format(self.players[i].wins) )
             print("Losses: {}".format(self.players[i].losses) )
     
@@ -72,12 +77,14 @@ class Deck:
         print("Dealer's cards: ")
         self.CPU_dealer.hand[0].PrintCard()
         print("[HIDDEN]")
+        print("")
 
         #show player cards, both face up
         for i in range(len(self.players)):
             print("Player {}'s cards: ".format(i+1) )
             for j in range(2):
                 self.players[i].hand[j].PrintCard()
+            print("")
 
         #check if dealer has blackjack
         total = self.TotalCards(self.CPU_dealer.hand)
@@ -114,9 +121,9 @@ class Deck:
         #todo error checking on input(capital letters)
         for i in range(len(self.players)):
             hit_count = 0
-            action = input("Player {}'s turn. Hit or stand?".format(i+1) )
+            action = input("Player {}'s turn. Hit or stand? ".format(i+1) )
             while action != "hit" and action != "stand":
-                action = input("Not a valid action. Hit or stand?".format(i+1) )
+                action = input("Not a valid action. Hit or stand? ".format(i+1) )
             
             while action == "hit":
                 #todo : print cards after each hit
@@ -174,6 +181,7 @@ class Deck:
 
     #returns a random card out of the cards_in_deck
     #if card is not marked as in the deck in play, another index is generated
+    #todo : make it actually random bc rn it doesnt work
     def DrawCard(self):
         random.seed(a=None, version=2)
         condition = False
