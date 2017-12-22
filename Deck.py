@@ -2,7 +2,8 @@ import random
 import cards_players
 
 #todo : text fixes (even more)
-#todo : betting system
+#todo : scoring system adjustment (double check)
+#todo : add multiple decks
 
 class Deck:
     #constructor
@@ -51,6 +52,7 @@ class Deck:
                 self.players[i].hand = []
             
             keep_playing = input("Play another round? (y/n): ")
+            keep_playing.lower()
             while keep_playing != "y" and keep_playing != "n":
                 keep_playing = input("Not a valid action. Please input 'y' for yes or 'n' for no: ")
             
@@ -70,6 +72,7 @@ class Deck:
     
     #plays one round
     def PlayRound(self):
+        print("")
         #draw cards
         for i in range(2):
             self.CPU_dealer.hand.append(self.DrawCard())
@@ -101,11 +104,10 @@ class Deck:
             return
                 
         #ask player for hit or stand
-        #todo forfeit ?
-        #todo error checking on input(capital letters)
         for i in range(len(self.players)):
             hit_count = 0
             action = input("Player {}'s turn. Hit or stand? ".format(i+1) )
+            action.lower()
             while action != "hit" and action != "stand":
                 action = input("Not a valid action. Hit or stand? ".format(i+1) )
             print("")
@@ -127,19 +129,18 @@ class Deck:
                     return
                 if total == 21:
                     #blackjack
-                    print("Player {} has Blackjack!")
+                    print("Player {} has Blackjack!".format(i+1) )
                     self.players[i].wins += 1
                     return
 
                 action = input("Hit again, or stand?".format(i+1) )
-                while action != "hit" or action != "Hit" and action != "stand" or action != "Stand":
+                while action != "hit" and action != "Hit" and action != "stand" and action != "Stand":
                     action = input("Not a valid action. Hit or stand?".format(i+1) )
 
+            print("")
             #stand
             total = self.TotalCards(self.players[i].hand)
 
-            #bust
-            #increment lose and return
             if total > 21:
                 print("Bust!")
                 self.players[i].losses += 1
@@ -149,7 +150,23 @@ class Deck:
                 print("Blackjack!")
                 self.players[i].wins += 1
 
-            
+            else:
+                total = self.TotalCards(self.players[i].hand)
+                dealer_total = self.TotalCards(self.CPU_dealer.hand)
+                print("Player {}'s hand adds up to {}.".format(i+1, total) )
+                print("The dealer's hand adds up to {}.".format(dealer_total) )
+                if dealer_total < total:
+                    print("Player {} wins!".format(i+1) )
+                    self.player[i].wins += 1
+                elif dealer_total > total:
+                    print("The dealer wins!")
+                    self.CPU_dealer.wins += 1
+                else:
+                    print("It's a tie!")
+                    self.player[i].wins += 1
+                    self.CPU_dealer.wins += 1
+
+            print("")
 
     def DealerBlackjack(self):
         print("The dealer has Blackjack!")
@@ -157,7 +174,7 @@ class Deck:
         print("Dealer's cards: ")
         for j in self.CPU_dealer.hand:
             j.PrintCard()
-        player_win == 0
+        player_win = 0
         winning_player = []
         #check if any players also have blackjack. if not, end the round
         for i in range(len(self.players)):
@@ -170,15 +187,16 @@ class Deck:
                 print("Player {} loses their bet.".format(i+1) )
 
             if player_win == 0:
-                CPU_dealer[i].wins += 1
+                self.CPU_dealer[i].wins += 1
 
             elif player_win == 1:
                 print("Player {} and the dealer have tied.".format(player[winning_player]) )
             else:
                 print("All players and the dealer have tied.")
 
+            print("")
+
     #total the values of a player's hand
-    #todo: improve logic for handling aces
     def TotalCards(self, hand):
         total = 0
         ace_count = 0
@@ -194,7 +212,7 @@ class Deck:
 
         if ace_count > 0:
             for j in range(ace_count):
-                if total + 11 >= 21:
+                if (total + 11) <= 21:
                     total += 11
                 else:
                     total += 1
@@ -208,12 +226,6 @@ class Deck:
         while (not condition):
             i = random.randrange(52)
             condition = self.cards_in_deck[i].in_deck
-        self.cards_in_deck[i].in_deck = False
-        return self.cards_in_deck[i]
-
-    def DrawCardTest(self):
-        i = self.count
-        self.count += 10
         self.cards_in_deck[i].in_deck = False
         return self.cards_in_deck[i]
 
