@@ -1,19 +1,17 @@
 import random
 import cards_players
 
-#todo : print after stand
-#todo : make it actually random bc rn it doesnt work
 #todo : text fixes (even more)
+#todo : betting system
 
 class Deck:
-    cards_in_deck = []
-    players = []
-    CPU_dealer = cards_players.Players('Dealer')
-    count = 0
-
     #constructor
     #initializes 52 cards in the deck in use and player Dealer
     def __init__(self):
+        self.cards_in_deck = []
+        self.players = []
+        self.CPU_dealer = cards_players.Players('Dealer')
+
         rank_count = 2
         suit_count = 1
         for i in range(52):
@@ -48,22 +46,27 @@ class Deck:
         keep_playing = "y"
         while keep_playing == "y":
             self.PlayRound()
+            for i in range(len(self.players)):
+                self.CPU_dealer.hand = []
+                self.players[i].hand = []
+            
             keep_playing = input("Play another round? (y/n): ")
             while keep_playing != "y" and keep_playing != "n":
                 keep_playing = input("Not a valid action. Please input 'y' for yes or 'n' for no: ")
             
         #display score
-
         print("Thanks for playing!")
         print("Final score: ")
         print("Dealer: ")
         print("Wins: {}".format(self.CPU_dealer.wins) )
         print("Losses: {}".format(self.CPU_dealer.losses) )
+        print("")
 
         for i in range(int(player_count)):
             print("Player {}:".format(i+1) )
             print("Wins: {}".format(self.players[i].wins) )
             print("Losses: {}".format(self.players[i].losses) )
+            print("")
     
     #plays one round
     def PlayRound(self):
@@ -75,14 +78,12 @@ class Deck:
 
         for i in range(len(self.players)):
             self.players[i].hand.append(self.DrawCard())
-            #self.players[i].hand.append(self.DrawCard())
-            print("player" +str(i) +": " + str(len(self.players[i].hand)))
+            self.players[i].hand.append(self.DrawCard())
         
         #show dealer cards
         #only one card is face up
         print("Dealer's cards: ")
         self.CPU_dealer.hand[0].PrintCard()
-        print("j:{}".format(self.CPU_dealer.hand[0]))
         print("[HIDDEN]")
         print("")
 
@@ -91,39 +92,14 @@ class Deck:
             print("Player {}'s cards: ".format(i+1) )
             for j in self.players[i].hand:
                 j.PrintCard()
-                print("j:{}".format(j))
             print("")
 
         #check if dealer has blackjack
         total = self.TotalCards(self.CPU_dealer.hand)
         if total == 21:
-            #blackjack
-            print("The dealer has Blackjack!")
-
-            print("Dealer's cards: ")
-            for j in self.CPU_dealer.hand:
-                j.PrintCard()
-            player_win == 0
-            winning_player = []
-            #check if any players also have blackjack. if not, end the round
-            for i in range(len(self.players)):
-                total = self.TotalCards(self.players[i].hand)
-                if total == 21:
-                    print("Player {} also has Blackjack!".format(i+1) )
-                    player_win += 1
-                    winning_player.append(i)
-                else:
-                    print("Player {} loses their bet.".format(i+1) )
-
-            if player_win == 0:
-                CPU_dealer[i].wins += 1
-
-            elif player_win == 1:
-                print("Player {} and the dealer have tied.".format(player[winning_player]) )
-            else:
-                print("All players and the dealer have tied.")
+            self.DealerBlackjack()
+            return
                 
-
         #ask player for hit or stand
         #todo forfeit ?
         #todo error checking on input(capital letters)
@@ -132,9 +108,9 @@ class Deck:
             action = input("Player {}'s turn. Hit or stand? ".format(i+1) )
             while action != "hit" and action != "stand":
                 action = input("Not a valid action. Hit or stand? ".format(i+1) )
+            print("")
             
             while action == "hit":
-                #todo : print cards after each hit
                 hit_count += 1
                 self.players[i].hand.append(self.DrawCard())
                 total = self.TotalCards(self.players[i].hand)
@@ -169,6 +145,34 @@ class Deck:
                 print("Blackjack!")
                 self.players[i].wins += 1
 
+            
+
+    def DealerBlackjack(self):
+        print("The dealer has Blackjack!")
+
+        print("Dealer's cards: ")
+        for j in self.CPU_dealer.hand:
+            j.PrintCard()
+        player_win == 0
+        winning_player = []
+        #check if any players also have blackjack. if not, end the round
+        for i in range(len(self.players)):
+            total = self.TotalCards(self.players[i].hand)
+            if total == 21:
+                print("Player {} also has Blackjack!".format(i+1) )
+                player_win += 1
+                winning_player.append(i)
+            else:
+                print("Player {} loses their bet.".format(i+1) )
+
+            if player_win == 0:
+                CPU_dealer[i].wins += 1
+
+            elif player_win == 1:
+                print("Player {} and the dealer have tied.".format(player[winning_player]) )
+            else:
+                print("All players and the dealer have tied.")
+
     #total the values of a player's hand
     #todo: improve logic for handling aces
     def TotalCards(self, hand):
@@ -194,7 +198,6 @@ class Deck:
 
     #returns a random card out of the cards_in_deck
     #if card is not marked as in the deck in play, another index is generated
-    #todo : make it actually random
     def DrawCard(self):
         random.seed(a=None, version=2)
         condition = False
@@ -209,11 +212,12 @@ class Deck:
         self.count += 10
         self.cards_in_deck[i].in_deck = False
         return self.cards_in_deck[i]
-    
+
     #print suit and rank of entire deck
     def PrintDeck(self):
         for i in range(52):
             self.cards_in_deck[i].PrintCard()
+
 
 def main():
     obj = Deck()
