@@ -122,11 +122,15 @@ class Deck:
 
                 if total > 21:
                     #bust
-                    #increment lose and break
-                    break
+                    print("Bust!")
+                    self.players[i].losses += 1
+                    return
                 if total == 21:
                     #blackjack
-                    break
+                    print("Player {} has Blackjack!")
+                    self.players[i].wins += 1
+                    return
+
                 action = input("Hit again, or stand?".format(i+1) )
                 while action != "hit" or action != "Hit" and action != "stand" or action != "Stand":
                     action = input("Not a valid action. Hit or stand?".format(i+1) )
@@ -217,7 +221,6 @@ class Deck:
     def PrintDeck(self):
         for i in range(52):
             self.cards_in_deck[i].PrintCard()
-
 
 def main():
     obj = Deck()
