@@ -4,7 +4,6 @@ import cards_players
 #todo : print after stand
 #todo : make it actually random bc rn it doesnt work
 #todo : text fixes (even more)
-#why r there so many extra cards in each hand?
 
 class Deck:
     cards_in_deck = []
@@ -18,7 +17,7 @@ class Deck:
         rank_count = 2
         suit_count = 1
         for i in range(52):
-            if rank_count >= 14:
+            if rank_count > 14:
                 rank_count = 2
                 suit_count += 1
 
@@ -195,8 +194,8 @@ class Deck:
 
     #returns a random card out of the cards_in_deck
     #if card is not marked as in the deck in play, another index is generated
-    #todo : make it actually random bc rn it doesnt work
-    def DrawCard1(self):
+    #todo : make it actually random
+    def DrawCard(self):
         random.seed(a=None, version=2)
         condition = False
         while (not condition):
@@ -205,11 +204,13 @@ class Deck:
         self.cards_in_deck[i].in_deck = False
         return self.cards_in_deck[i]
 
-    def DrawCard(self):
+    def DrawCardTest(self):
         i = self.count
         self.count += 10
+        self.cards_in_deck[i].in_deck = False
         return self.cards_in_deck[i]
-
+    
+    #print suit and rank of entire deck
     def PrintDeck(self):
         for i in range(52):
             self.cards_in_deck[i].PrintCard()
