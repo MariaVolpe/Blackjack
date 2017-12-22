@@ -10,11 +10,11 @@ class Deck:
     cards_in_deck = []
     players = []
     CPU_dealer = cards_players.Players('Dealer')
+    count = 0
 
     #constructor
     #initializes 52 cards in the deck in use and player Dealer
     def __init__(self):
-
         rank_count = 1
         suit_count = 1
         for i in range(52):
@@ -32,11 +32,15 @@ class Deck:
     #logic to play game
     def Game(self):
         #output greeting text
+        
 
         #set player count
         player_count = input("How many players? ")
+        while not player_count.isdigit():
+            player_count = input("Please enter a positive integer. How many players? ")
 
-        #todo: validate user input 
+        while int(player_count) > 2 or int(player_count) == 0:
+            player_count = input("Please enter a number between 1 and 2. How many players? ")
         
         for i in range(int(player_count)):
             player_name = input("Please enter the name of Player {}: ".format(i+1) )
@@ -48,8 +52,10 @@ class Deck:
         keep_playing = "y"
         while keep_playing == "y":
             self.PlayRound()
-            keep_playing = input("Play another round? (y/n) ")
-
+            keep_playing = input("Play another round? (y/n): ")
+            while keep_playing != "y" and keep_playing != "n":
+                keep_playing = input("Not a valid action. Please input 'y' for yes or 'n' for no: ")
+            
         #display score
 
         print("Thanks for playing!")
@@ -69,15 +75,18 @@ class Deck:
         for i in range(2):
             self.CPU_dealer.hand.append(self.DrawCard())
 
-        for i in range(len(self.players)):
-            for j in range(2):
-                self.players[i].hand.append(self.DrawCard())
+        #print("dealers: " + str(len(self.CPU_dealer.hand)))
 
-    
+        for i in range(len(self.players)):
+            self.players[i].hand.append(self.DrawCard())
+            #self.players[i].hand.append(self.DrawCard())
+            print("player" +str(i) +": " + str(len(self.players[i].hand)))
+        
         #show dealer cards
         #only one card is face up
         print("Dealer's cards: ")
         self.CPU_dealer.hand[0].PrintCard()
+        print("j:{}".format(self.CPU_dealer.hand[0]))
         print("[HIDDEN]")
         print("")
 
@@ -96,7 +105,7 @@ class Deck:
             print("The dealer has Blackjack!")
 
             print("Dealer's cards: ")
-            for j in self.CPU_dealer.hand
+            for j in self.CPU_dealer.hand:
                 j.PrintCard()
             player_win == 0
             winning_player = []
@@ -148,7 +157,7 @@ class Deck:
                     #blackjack
                     break
                 action = input("Hit again, or stand?".format(i+1) )
-                while action != "hit" and action != "stand":
+                while action != "hit" or action != "Hit" and action != "stand" or action != "Stand":
                     action = input("Not a valid action. Hit or stand?".format(i+1) )
 
             #stand
@@ -191,12 +200,18 @@ class Deck:
     #returns a random card out of the cards_in_deck
     #if card is not marked as in the deck in play, another index is generated
     #todo : make it actually random bc rn it doesnt work
-    def DrawCard(self):
+    def DrawCard1(self):
         random.seed(a=None, version=2)
         condition = False
         while (not condition):
             i = random.randrange(52)
             condition = self.cards_in_deck[i].in_deck
+        self.cards_in_deck[i].in_deck = False
+        return self.cards_in_deck[i]
+
+    def DrawCard(self):
+        i = self.count
+        self.count += 10
         return self.cards_in_deck[i]
 
 def main():
