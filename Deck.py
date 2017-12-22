@@ -15,24 +15,21 @@ class Deck:
     #constructor
     #initializes 52 cards in the deck in use and player Dealer
     def __init__(self):
-        rank_count = 1
+        rank_count = 2
         suit_count = 1
         for i in range(52):
             if rank_count >= 14:
                 rank_count = 2
-            if suit_count >= 4:
-                suit_count = 1
+                suit_count += 1
 
             x = cards_players.Cards(suit_count, rank_count)
             self.cards_in_deck.append(x)
 
-            rank_count += rank_count
-            suit_count += suit_count
+            rank_count += 1
 
     #logic to play game
     def Game(self):
         #output greeting text
-        
 
         #set player count
         player_count = input("How many players? ")
@@ -148,7 +145,6 @@ class Deck:
                     j.PrintCard()
                 print("")
 
-
                 if total > 21:
                     #bust
                     #increment lose and break
@@ -214,8 +210,13 @@ class Deck:
         self.count += 10
         return self.cards_in_deck[i]
 
+    def PrintDeck(self):
+        for i in range(52):
+            self.cards_in_deck[i].PrintCard()
+
 def main():
     obj = Deck()
+    #obj.PrintDeck()
     obj.Game()
 
 if __name__ == "__main__":

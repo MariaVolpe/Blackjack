@@ -10,7 +10,7 @@ class Cards:
 
     #print card
     def PrintCard(self):
-        card_name = {14 : 'King', 13 : 'Queen', 12: 'Jack', 11: 'Ace'}
+        rank_name = {14 : 'Kinag', 13 : 'Queen', 12: 'Jack', 11: 'Ace'}
         suit_name = {4 : 'Spades', 3 : 'Hearts', 2: 'Clubs', 1: 'Diamonds'}
         if self.rank > 10:
             print("{} of {}".format(rank_name[self.rank], suit_name[self.suit]))
