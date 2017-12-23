@@ -55,6 +55,7 @@ class Deck:
             keep_playing.lower()
             while keep_playing != "y" and keep_playing != "n":
                 keep_playing = input("Not a valid action. Please input 'y' for yes or 'n' for no: ")
+                keep_playing.lower()
             
         #display score
         print("Thanks for playing!")
@@ -110,6 +111,7 @@ class Deck:
             action.lower()
             while action != "hit" and action != "stand":
                 action = input("Not a valid action. Hit or stand? ".format(i+1) )
+                action.lower()
             print("")
             
             while action == "hit":
@@ -134,9 +136,10 @@ class Deck:
                     return
 
                 action = input("Hit again, or stand?".format(i+1) )
-                while action != "hit" and action != "Hit" and action != "stand" and action != "Stand":
+                action.lower()
+                while action != "hit" and action != "stand":
                     action = input("Not a valid action. Hit or stand?".format(i+1) )
-
+                    action.lower()
             print("")
             #stand
             total = self.TotalCards(self.players[i].hand)
