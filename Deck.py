@@ -106,7 +106,6 @@ class Deck:
                 
         #ask player for hit or stand
         for i in range(len(self.players)):
-            hit_count = 0
             action = input("Player {}'s turn. Hit or stand? ".format(i+1) )
             action.lower()
             while action != "hit" and action != "stand":
@@ -114,32 +113,8 @@ class Deck:
                 action.lower()
             print("")
             
-            while action == "hit":
-                hit_count += 1
-                self.players[i].hand.append(self.DrawCard())
-                total = self.TotalCards(self.players[i].hand)
-
-                print("Player {}'s cards: ".format(i+1) )
-                for j in self.players[i].hand:
-                    j.PrintCard()
-                print("")
-
-                if total > 21:
-                    #bust
-                    print("Bust!")
-                    self.players[i].losses += 1
-                    return
-                if total == 21:
-                    #blackjack
-                    print("Player {} has Blackjack!".format(i+1) )
-                    self.players[i].wins += 1
-                    return
-
-                action = input("Hit again, or stand?".format(i+1) )
-                action.lower()
-                while action != "hit" and action != "stand":
-                    action = input("Not a valid action. Hit or stand?".format(i+1) )
-                    action.lower()
+            self.Hit(i)
+            
             print("")
             #stand
             total = self.TotalCards(self.players[i].hand)
@@ -190,7 +165,7 @@ class Deck:
                 print("Player {} loses their bet.".format(i+1) )
 
             if player_win == 0:
-                self.CPU_dealer[i].wins += 1
+                self.CPU_dealer.wins += 1
 
             elif player_win == 1:
                 print("Player {} and the dealer have tied.".format(player[winning_player]) )
@@ -236,6 +211,37 @@ class Deck:
     def PrintDeck(self):
         for i in range(52):
             self.cards_in_deck[i].PrintCard()
+
+
+    def Hit(self, i):
+        action = "hit"
+        hit_count = 0
+        while action == "hit":
+                hit_count += 1
+                self.players[i].hand.append(self.DrawCard())
+                total = self.TotalCards(self.players[i].hand)
+
+                print("Player {}'s cards: ".format(i+1) )
+                for j in self.players[i].hand:
+                    j.PrintCard()
+                print("")
+
+                if total > 21:
+                    #bust
+                    print("Bust!")
+                    self.players[i].losses += 1
+                    return
+                if total == 21:
+                    #blackjack
+                    print("Player {} has Blackjack!".format(i+1) )
+                    self.players[i].wins += 1
+                    return
+
+                action = input("Hit again, or stand?".format(i+1) )
+                action.lower()
+                while action != "hit" and action != "stand":
+                    action = input("Not a valid action. Hit or stand?".format(i+1) )
+                    action.lower()
 
 def main():
     obj = Deck()
