@@ -1,9 +1,6 @@
 import random
 import cards_players
 
-#todo : text fixes (even more)
-#todo : scoring system adjustment (double check)
-#todo : add multiple decks
 
 class Deck:
     #constructor
@@ -28,7 +25,7 @@ class Deck:
     #logic to play game
     def Game(self):
         #output greeting text
-
+        print("Welcome to Blackjack!")
         #set player count
         player_count = input("How many players? ")
         while not player_count.isdigit():
@@ -125,7 +122,7 @@ class Deck:
                 
             elif total == 21:
                 #blackjack
-                print("Blackjack!")
+                print("Player {} has Blackjack!".format(i+1) )
                 self.players[i].wins += 1
 
             else:
@@ -227,14 +224,8 @@ class Deck:
                 print("")
 
                 if total > 21:
-                    #bust
-                    print("Bust!")
-                    self.players[i].losses += 1
                     return
                 if total == 21:
-                    #blackjack
-                    print("Player {} has Blackjack!".format(i+1) )
-                    self.players[i].wins += 1
                     return
 
                 action = input("Hit again, or stand?".format(i+1) )
