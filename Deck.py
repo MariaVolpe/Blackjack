@@ -1,14 +1,19 @@
 import random
 import cards_players
+import tkinter as tk
 
 
 class Deck:
     #constructor
     #initializes 52 cards in the deck in use and player Dealer
-    def __init__(self):
+    def __init__(self, master):
         self.cards_in_deck = []
         self.players = []
         self.CPU_dealer = cards_players.Players('Dealer')
+        self.master = master
+        self.num_players = 0
+
+        self.master.minsize(width=1000, height=800)
 
         rank_count = 2
         suit_count = 1
@@ -23,27 +28,61 @@ class Deck:
             rank_count += 1
 
     #logic to play game
-    def Game(self):
-        #output greeting text
-        print("Welcome to Blackjack!")
-        #set player count
-        player_count = input("How many players? ")
-        while not player_count.isdigit():
-            player_count = input("Please enter a positive integer. How many players? ")
+    def setup_game(self):
 
-        while int(player_count) > 2 or int(player_count) == 0:
-            player_count = input("Please enter a number between 1 and 2. How many players? ")
+        greet_screen = tk.Frame(self.master)
+        greet_screen.pack()
+
+        greetings = tk.Label(greet_screen, text = "Welcome to Blackjack!")
+        greetings.pack(side="top")
+
+        tk.Label(greet_screen, text = "How many players?").pack(side="top")
+
+        player_count = tk.IntVar()
+        tk.Radiobutton(greet_screen, text="1", variable=player_count, value=1).pack(anchor="w")
+        tk.Radiobutton(greet_screen, text="2", variable=player_count, value=2).pack(anchor="w")
         
-        for i in range(int(player_count)):
-            player_name = input("Please enter the name of Player {}: ".format(i+1) )
-            print("")
-            new_player = cards_players.Players(player_name)
+        tk.Button(greet_screen, text="OK!", command=lambda: self.start_set_player(greet_screen, player_count)).pack()
+        
+    def start_set_player(self, greet_screen, player_count):
+        greet_screen.destroy()
+        self.num_players = player_count.get()
+
+        set_player = tk.Frame(self.master)
+        set_player.pack()
+        e = []
+        labels = []
+
+        for i in range(self.num_players):
+            labels.append( tk.Label(set_player, text="Player {} Name: ".format(i+1)) )
+            e.append( tk.Entry(set_player) )
+
+        for i in range(self.num_players):
+            labels[i].pack()
+            e[i].pack()
+
+        tk.Button(set_player, text="OK!", command=lambda: self.end_set_player(set_player, e)).pack()
+
+    def end_set_player(self, set_player, e):
+        for i in range(self.num_players):
+            new_player = cards_players.Players(e[i].get())
             self.players.append(new_player)
+        set_player.destroy()
+        self.begin_game()
+
+
+    def begin_game(self):
+
+        dealerCards = tk.Frame(self.master, width="700", height="700")
+        dealerCards.pack(side="top")
+        
+        buttonsFrame = tk.Frame(self.master)
+        buttonsFrame.pack(side="bottom")
 
         #play rounds until player quits
-        keep_playing = "y"
-        while keep_playing == "y":
-            self.PlayRound()
+        keep_playing = 1
+        while keep_playing == 1:
+            self.play_round()
             for i in range(len(self.players)):
                 self.CPU_dealer.hand = []
                 self.players[i].hand = []
@@ -69,17 +108,17 @@ class Deck:
             print("")
     
     #plays one round
-    def PlayRound(self):
+    def play_round(self):
         print("")
         #draw cards
         for i in range(2):
-            self.CPU_dealer.hand.append(self.DrawCard())
+            self.CPU_dealer.hand.append(self.draw_card())
 
         #print("dealers: " + str(len(self.CPU_dealer.hand)))
 
         for i in range(len(self.players)):
-            self.players[i].hand.append(self.DrawCard())
-            self.players[i].hand.append(self.DrawCard())
+            self.players[i].hand.append(self.draw_card())
+            self.players[i].hand.append(self.draw_card())
         
         #show dealer cards
         #only one card is face up
@@ -96,9 +135,9 @@ class Deck:
             print("")
 
         #check if dealer has blackjack
-        total = self.TotalCards(self.CPU_dealer.hand)
+        total = self.total_cards(self.CPU_dealer.hand)
         if total == 21:
-            self.DealerBlackjack()
+            self.dealer_blackjack()
             return
                 
         #ask player for hit or stand
@@ -110,11 +149,11 @@ class Deck:
                 action.lower()
             print("")
             
-            self.Hit(i)
+            self.hit(i)
             
             print("")
             #stand
-            total = self.TotalCards(self.players[i].hand)
+            total = self.total_cards(self.players[i].hand)
 
             if total > 21:
                 print("Bust!")
@@ -126,8 +165,8 @@ class Deck:
                 self.players[i].wins += 1
 
             else:
-                total = self.TotalCards(self.players[i].hand)
-                dealer_total = self.TotalCards(self.CPU_dealer.hand)
+                total = self.total_cards(self.players[i].hand)
+                dealer_total = self.total_cards(self.CPU_dealer.hand)
                 print("Player {}'s hand adds up to {}.".format(i+1, total) )
                 print("The dealer's hand adds up to {}.".format(dealer_total) )
                 if dealer_total < total:
@@ -143,7 +182,7 @@ class Deck:
 
             print("")
 
-    def DealerBlackjack(self):
+    def dealer_blackjack(self):
         print("The dealer has Blackjack!")
 
         print("Dealer's cards: ")
@@ -153,7 +192,7 @@ class Deck:
         winning_player = []
         #check if any players also have blackjack. if not, end the round
         for i in range(len(self.players)):
-            total = self.TotalCards(self.players[i].hand)
+            total = self.total_cards(self.players[i].hand)
             if total == 21:
                 print("Player {} also has Blackjack!".format(i+1) )
                 player_win += 1
@@ -172,7 +211,7 @@ class Deck:
             print("")
 
     #total the values of a player's hand
-    def TotalCards(self, hand):
+    def total_cards(self, hand):
         total = 0
         ace_count = 0
         for i in hand:
@@ -195,7 +234,7 @@ class Deck:
 
     #returns a random card out of the cards_in_deck
     #if card is not marked as in the deck in play, another index is generated
-    def DrawCard(self):
+    def draw_card(self):
         random.seed(a=None, version=2)
         condition = False
         while (not condition):
@@ -205,18 +244,18 @@ class Deck:
         return self.cards_in_deck[i]
 
     #print suit and rank of entire deck
-    def PrintDeck(self):
+    def print_deck(self):
         for i in range(52):
             self.cards_in_deck[i].PrintCard()
 
 
-    def Hit(self, i):
+    def hit(self, i):
         action = "hit"
         hit_count = 0
         while action == "hit":
                 hit_count += 1
-                self.players[i].hand.append(self.DrawCard())
-                total = self.TotalCards(self.players[i].hand)
+                self.players[i].hand.append(self.draw_card())
+                total = self.total_cards(self.players[i].hand)
 
                 print("Player {}'s cards: ".format(i+1) )
                 for j in self.players[i].hand:
@@ -235,9 +274,14 @@ class Deck:
                     action.lower()
 
 def main():
-    obj = Deck()
-    #obj.PrintDeck()
-    obj.Game()
+    root = tk.Tk()
+
+    obj = Deck(root)
+    #obj.print_deck()
+    obj.setup_game()
+
+
+    root.mainloop() 
 
 if __name__ == "__main__":
     main()
