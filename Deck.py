@@ -73,33 +73,32 @@ class Deck:
 
     def begin_game(self):
 
-        dealerCards = tk.Frame(self.master, width="700", height="700")
-        dealerCards.pack(side="top")
-        
-        buttonsFrame = tk.Frame(self.master)
-        buttonsFrame.pack(side="bottom")
+        self.play_round(1)
 
-        #play rounds until player quits
-        keep_playing = 1
-        while keep_playing == 1:
-            self.play_round()
-            for i in range(len(self.players)):
-                self.CPU_dealer.hand = []
-                self.players[i].hand = []
+        keep_playing_frame = tk.Frame(self.master)
+        keep_playing_frame.pack()
+        #empty hands
+        for i in range(self.num_players):
+            self.CPU_dealer.hand = []
+            self.players[i].hand = []
             
-            keep_playing = input("Play another round? (y/n): ")
-            keep_playing.lower()
-            while keep_playing != "y" and keep_playing != "n":
-                keep_playing = input("Not a valid action. Please input 'y' for yes or 'n' for no: ")
-                keep_playing.lower()
-            
+        keep_playing = tk.Label(keep_playing_frame,text="Play another round?")
+        tk.Button(keep_playing_frame, text="Play Again", command=begin_game).pack()
+        tk.Button(keep_playing_frame, text="Quit", command=end_game).pack()
+        
+
+    def end_game(self):
         #display score
-        print("Thanks for playing!")
-        print("Final score: ")
-        print("Dealer: ")
-        print("Wins: {}".format(self.CPU_dealer.wins) )
-        print("Losses: {}".format(self.CPU_dealer.losses) )
-        print("")
+
+        end_game_frame = tk.Frame(self.master)
+        end_game_frame.pack()
+
+
+        tk.Label(text="Thanks for playing!").pack()
+        tk.Label(text="Final score: ").pack()
+        tk.Label(text="Dealer:").pack()
+        tk.Label(text="Wins: {}".format(self.CPU_dealer.wins) ).pack()
+        tk.Label(text="Losses: {}".format(self.CPU_dealer.losses) ).pack()
 
         for i in range(int(player_count)):
             print("Player {}:".format(i+1) )
@@ -107,91 +106,152 @@ class Deck:
             print("Losses: {}".format(self.players[i].losses) )
             print("")
     
+
     #plays one round
-    def play_round(self):
-        print("")
+    def play_round(self, i):
+
+        if self.num_players == 1:
+            dealer_cards_frame = tk.Frame(self.master, width="1000", height="350")
+            dealer_cards_frame.pack(side="top")
+
+            player1_cards_frame = tk.Frame(self.master, width="1000", height="350")
+            player1_cards_frame.pack(side="top")
+            buttons1_frame = tk.Frame(self.master, width="1000", height="100")
+            buttons1_frame.pack(side="bottom")
+
+        if self.num_players == 2:
+            dealer_cards_frame = tk.Frame(self.master, width="1000", height="250")
+            dealer_cards_frame.pack(side="top")
+
+            player1_cards_frame = tk.Frame(self.master, width="1000", height="250")
+            player1_cards_frame.pack(side="top")
+            buttons1_frame = tk.Frame(self.master, width="1000", height="100")
+            buttons1_frame.pack(side="bottom")
+
+            player2_cards_frame = tk.Frame(self.master, width="1000", height="250")
+            player2_cards_frame.pack(side="top")
+            buttons2_frame = tk.Frame(self.master, width="1000", height="100")
+            buttons2_frame.pack(side="bottom")
+
         #draw cards
         for i in range(2):
             self.CPU_dealer.hand.append(self.draw_card())
 
-        #print("dealers: " + str(len(self.CPU_dealer.hand)))
-
-        for i in range(len(self.players)):
+        for i in range(self.num_players):
             self.players[i].hand.append(self.draw_card())
             self.players[i].hand.append(self.draw_card())
         
         #show dealer cards
         #only one card is face up
-        print("Dealer's cards: ")
-        self.CPU_dealer.hand[0].PrintCard()
-        print("[HIDDEN]")
-        print("")
+        dealer_label = tk.Label(dealer_cards_frame, text="Dealer's cards:")
+        dealer_label.grid(row = "0", column = "1")
+
+        dealer_card_canvas = tk.Canvas(dealer_cards_frame, width="1000", height="430")
+        dealer_card_canvas.grid(row = "1", column = "1")
+
+        #returns rectangle that begins top left corner at (25, 25) and ends bottom right at (150,220)
+        dealer_card_1 = self.CPU_dealer.hand[0].PrintCard(dealer_card_canvas,25,25)
+
+        #30 pixels in between dealer_card_1 and hidden card
+        #begins top left corner at (190, 25) and ends bottom right at (315, 220)
+        dealer_card_hidden = dealer_card_canvas.create_rectangle(190, 25, 190+125, 25+195, fill="blue")
 
         #show player cards, both face up
-        for i in range(len(self.players)):
-            print("Player {}'s cards: ".format(i+1) )
-            for j in self.players[i].hand:
-                j.PrintCard()
-            print("")
+        player1_label = tk.Label(player1_cards_frame, text="{}'s cards: ".format(self.players[0].name))
+        player1_label.grid(row = "0", column = "1")
+            
+        player1_card_canvas = tk.Canvas(player1_cards_frame, width="1000", height="430")
+        player1_card_canvas.grid(row = "1", column = "1")
 
+        player1_card_recs = []
+        xoffset = 0
+        for i, j in enumerate(self.players[0].hand):
+            player1_card_recs.append( j.PrintCard(player1_card_canvas,25+xoffset, 25) )
+                # width of a card (125) + number of pixels between cards (30)
+            xoffset += 165
+            
+        if self.num_players == 2:
+            player2_label = tk.Label(player2_cards_frame, text="{}'s cards: ".format(self.players[0].name))
+            player2_label.grid(row = "0", column = "1")
+            
+            player2_card_canvas = tk.Canvas(player2_cards_frame, width="1000", height="430")
+            player2_card_canvas.grid(row = "1", column = "1")
+
+            player2_card_recs = []
+            xoffset = 0
+            for i, j in enumerate(self.players[0].hand):
+                player2_card_recs.append( j.PrintCard(player2_card_canvas,25+xoffset, 25) )
+                # width of a card (125) + number of pixels between cards (30)
+                xoffset += 165
+            
         #check if dealer has blackjack
         total = self.total_cards(self.CPU_dealer.hand)
         if total == 21:
             self.dealer_blackjack()
             return
-                
+        
         #ask player for hit or stand
-        for i in range(len(self.players)):
-            action = input("Player {}'s turn. Hit or stand? ".format(i+1) )
-            action.lower()
-            while action != "hit" and action != "stand":
-                action = input("Not a valid action. Hit or stand? ".format(i+1) )
-                action.lower()
-            print("")
-            
-            self.hit(i)
-            
-            print("")
-            #stand
-            total = self.total_cards(self.players[i].hand)
+        tk.Label(buttons1_frame, text="{}'s turn.".format(players[i-1].name)).pack()
+        stand_button = tk.Button(buttons1_frame, text="Stand", command=lambda: play_round2(i))
+        stand_button.pack()
+        hit_button = tk.Button(buttons1_frame, text="Hit", command=lambda: self.hit(i))
+        hit_button.pack()
 
-            if total > 21:
-                print("Bust!")
-                self.players[i].losses += 1
+        def play_round2(i):
+            if self.num_players == 2 and i !=2:
+                self.play_round(2)
+            
+
+        print("")
+        #stand
+        total = self.total_cards(self.players[i-1].hand)
+
+        if total > 21:
+            print("Bust!")
+            self.players[i].losses += 1
                 
-            elif total == 21:
-                #blackjack
-                print("Player {} has Blackjack!".format(i+1) )
-                self.players[i].wins += 1
+        elif total == 21:
+            #blackjack
+            print("Player {} has Blackjack!".format(i+1) )
+            self.players[i].wins += 1
 
+        else:
+            total = self.total_cards(self.players[i].hand)
+            dealer_total = self.total_cards(self.CPU_dealer.hand)
+            print("Player {}'s hand adds up to {}.".format(i+1, total) )
+            print("The dealer's hand adds up to {}.".format(dealer_total) )
+            if dealer_total < total:
+                print("Player {} wins!".format(i+1) )
+                self.player[i].wins += 1
+            elif dealer_total > total:
+                print("The dealer wins!")
+                self.CPU_dealer.wins += 1
             else:
-                total = self.total_cards(self.players[i].hand)
-                dealer_total = self.total_cards(self.CPU_dealer.hand)
-                print("Player {}'s hand adds up to {}.".format(i+1, total) )
-                print("The dealer's hand adds up to {}.".format(dealer_total) )
-                if dealer_total < total:
-                    print("Player {} wins!".format(i+1) )
-                    self.player[i].wins += 1
-                elif dealer_total > total:
-                    print("The dealer wins!")
-                    self.CPU_dealer.wins += 1
-                else:
-                    print("It's a tie!")
-                    self.player[i].wins += 1
-                    self.CPU_dealer.wins += 1
-
+                print("It's a tie!")
+                self.player[i].wins += 1
+                self.CPU_dealer.wins += 1
             print("")
+            
 
+    def end_round(self):
+        dealer_cards_frame.destroy()
+        player1_cards_frame.destroy()
+        buttons1_frame.destroy()
+        if self.num_players == 2:
+            player2_cards_frame.destroy()
+            buttons2_frame.destroy()
+        
+    
     def dealer_blackjack(self):
         print("The dealer has Blackjack!")
 
         print("Dealer's cards: ")
-        for j in self.CPU_dealer.hand:
-            j.PrintCard()
+        #for j in self.CPU_dealer.hand:
+            #j.PrintCard()
         player_win = 0
         winning_player = []
         #check if any players also have blackjack. if not, end the round
-        for i in range(len(self.players)):
+        for i in range(self.num_players):
             total = self.total_cards(self.players[i].hand)
             if total == 21:
                 print("Player {} also has Blackjack!".format(i+1) )
@@ -258,8 +318,8 @@ class Deck:
                 total = self.total_cards(self.players[i].hand)
 
                 print("Player {}'s cards: ".format(i+1) )
-                for j in self.players[i].hand:
-                    j.PrintCard()
+                #for j in self.players[i].hand:
+                    #j.PrintCard()
                 print("")
 
                 if total > 21:
