@@ -13,7 +13,8 @@ class Deck:
         self.master = master
         self.num_players = 0
 
-        self.master.minsize(width=1000, height=800)
+        self.master.minsize(width=1000, height=750)
+        self.master.maxsize(width=1000, height=750)
 
         rank_count = 2
         suit_count = 1
@@ -112,67 +113,25 @@ class Deck:
     #plays one round
     def play_round(self, i):
 
-        if self.num_players == 1:
-            # dealer_cards_frame = tk.Frame(self.master, width="1000", height="350")
-            # dealer_cards_frame.grid(rowspan=5)
-            # dealer_cards_frame.grid_propagate(0)
+        dealer_cards_frame = tk.Frame(self.master)
+        dealer_cards_frame.pack()
 
+        player1_cards_frame = tk.Frame(self.master)
+        player1_cards_frame.pack()
 
-            # player1_cards_frame = tk.Frame(self.master, width="1000", height="350")
-            # player1_cards_frame.grid(row=5, rowspan=4)
-            # player1_cards_frame.grid_propagate(0)
+        buttons1_frame = tk.Frame(self.master)
+        buttons1_frame.pack()
 
-            # buttons1_frame = tk.Frame(self.master, width="1000", height="100")
-            # buttons1_frame.grid(row=9, rowspan=1)
-            # buttons1_frame.grid_propagate(0)
+        canvas_height = 350
 
-            dealer_cards_frame = tk.Frame(self.master, width="1000", height="350")
-            dealer_cards_frame.pack(anchor="n")
- 
-
-            player1_cards_frame = tk.Frame(self.master, width="1000", height="350")
-            player1_cards_frame.pack(anchor="center")
-
-            buttons1_frame = tk.Frame(self.master, width="1000", height="100")
-            buttons1_frame.pack(anchor="s")
-
-
-        elif self.num_players == 2:
-            # dealer_cards_frame = tk.Frame(self.master, width="1000", height="0")
-            # dealer_cards_frame.grid_propagate(0)
-            # dealer_cards_frame.grid(rowspan="1", sticky = "N")
-
-            # player1_cards_frame = tk.Frame(self.master)
-            # #width="1000", height="250")
-            # player1_cards_frame.grid(row="4", rowspan="3", sticky = "N")
-            # buttons1_frame = tk.Frame(self.master)
-            # #width="1000", height="25")
-            # buttons1_frame.grid(row="7", rowspan="1", sticky = "N")
-
-            # player2_cards_frame = tk.Frame(self.master)
-            # # width="1000", height="250")
-            # player2_cards_frame.grid(row="8", rowspan="3", sticky = "N")
-            # buttons2_frame = tk.Frame(self.master, width="1000", height="25")
-            # buttons2_frame.grid(row="11",rowspan="1", sticky = "N")
-
-
-            dealer_cards_frame = tk.Frame(self.master, width="1000", height="0")
-            dealer_cards_frame.pack()
-
-            player1_cards_frame = tk.Frame(self.master)
-            #width="1000", height="250")
-            player1_cards_frame.pack()
-            buttons1_frame = tk.Frame(self.master)
-            #width="1000", height="25")
-            buttons1_frame.pack()
-
+        if self.num_players == 2:
             player2_cards_frame = tk.Frame(self.master)
-            # width="1000", height="250")
             player2_cards_frame.pack()
-            buttons2_frame = tk.Frame(self.master, width="1000", height="25")
+
+            buttons2_frame = tk.Frame(self.master)
             buttons2_frame.pack()
             
-        print(self.master.grid_size())
+            canvas_height = 220
         
         
         #draw cards
@@ -188,9 +147,7 @@ class Deck:
         dealer_label = tk.Label(dealer_cards_frame, text="Dealer's cards:")
         dealer_label.pack()
 
-#PUT THE HEIGHTS RIGHT AND USE VARIABLES TO SET THEM INSTEAD OF IF STATEMENTS IM SICK OF HTIS
-
-        dealer_card_canvas = tk.Canvas(dealer_cards_frame, width="1000", height="250")
+        dealer_card_canvas = tk.Canvas(dealer_cards_frame, width="1000", height=canvas_height)
         dealer_card_canvas.pack()
 
         #returns rectangle that begins top left corner at (25, 25) and ends bottom right at (150,220)
@@ -201,55 +158,34 @@ class Deck:
         dealer_card_hidden = dealer_card_canvas.create_rectangle(190, 25, 190+125, 25+195, fill="blue")
 
 
-        if self.num_players == 1:
-            #show player cards, both face up
-            player1_label = tk.Label(player1_cards_frame, text="{}'s cards: ".format(self.players[0].name))
-            player1_label.pack(side="top")
+        #show player 1 cards
+        player1_label = tk.Label(player1_cards_frame, text="{}'s cards: ".format(self.players[0].name))
+        player1_label.pack(side="top")
             
-            player1_card_canvas = tk.Canvas(player1_cards_frame, width="1000", height="430")
-            player1_card_canvas.pack(side="top")
+        player1_card_canvas = tk.Canvas(player1_cards_frame, width="1000", height=canvas_height)
+        player1_card_canvas.pack(side="top")
 
-            player1_card_recs = []
-            xoffset = 0
-            for i, j in enumerate(self.players[0].hand):
-                player1_card_recs.append( j.PrintCard(player1_card_canvas,25+xoffset, 25) )
-                    # width of a card (125) + number of pixels between cards (30)
-                xoffset += 165
+        player1_card_recs = []
+        xoffset = 0
+        for i, j in enumerate(self.players[0].hand):
+            player1_card_recs.append( j.PrintCard(player1_card_canvas,25+xoffset, 25) )
+                # width of a card (125) + number of pixels between cards (30)
+            xoffset += 165
             
-        #ask player for hit or stand
-            tk.Label(buttons1_frame, text="{}'s turn.".format(self.players[i-1].name)).pack()
-            stand_button1 = tk.Button(buttons1_frame, text="Stand", command=lambda: play_round2(i))
-            stand_button1.pack()
-            hit_button1 = tk.Button(buttons1_frame, text="Hit", command=lambda: self.hit(i))
-            hit_button1.pack()
+        # #ask player for hit or stand
+        #     tk.Label(buttons1_frame, text="{}'s turn.".format(self.players[i-1].name)).pack()
+        #     stand_button1 = tk.Button(buttons1_frame, text="Stand", command=lambda: play_round2(i))
+        #     stand_button1.pack()
+        #     hit_button1 = tk.Button(buttons1_frame, text="Hit", command=lambda: self.hit(i))
+        #     hit_button1.pack()
+
 
         if self.num_players == 2:
-
-            player1_label = tk.Label(player1_cards_frame, text="{}'s cards: ".format(self.players[0].name))
-            player1_label.pack(side="top")
-            
-            player1_card_canvas = tk.Canvas(player1_cards_frame, width="1000", height="350")
-            player1_card_canvas.pack(side="top")
-
-            player1_card_recs = []
-            xoffset = 0
-            for i, j in enumerate(self.players[0].hand):
-                player1_card_recs.append( j.PrintCard(player1_card_canvas,25+xoffset, 25) )
-                    # width of a card (125) + number of pixels between cards (30)
-                xoffset += 165
-            
-        #ask player for hit or stand
-            tk.Label(buttons1_frame, text="{}'s turn.".format(self.players[i-1].name)).pack()
-            stand_button1 = tk.Button(buttons1_frame, text="Stand", command=lambda: play_round2(i))
-            stand_button1.pack()
-            hit_button1 = tk.Button(buttons1_frame, text="Hit", command=lambda: self.hit(i))
-            hit_button1.pack()
-
 
             player2_label = tk.Label(player2_cards_frame, text="{}'s cards: ".format(self.players[0].name))
             player2_label.pack()
             
-            player2_card_canvas = tk.Canvas(player2_cards_frame, width="1000", height="350")
+            player2_card_canvas = tk.Canvas(player2_cards_frame, width="1000", height=canvas_height)
             player2_card_canvas.pack()
 
             player2_card_recs = []
@@ -260,12 +196,12 @@ class Deck:
                 xoffset += 165
             
 
-        tk.Label(buttons2_frame, text="{}'s turn.".format(self.players[i-1].name)).pack()
+            # tk.Label(buttons2_frame, text="{}'s turn.".format(self.players[i-1].name)).pack()
         
-        stand_button2 = tk.Button(buttons2_frame, text="Stand", command=lambda: play_round2(i))
-        stand_button2.pack()
-        hit_button2 = tk.Button(buttons2_frame, text="Hit", command=lambda: self.hit(i))
-        hit_button2.pack()
+            # stand_button2 = tk.Button(buttons2_frame, text="Stand", command=lambda: play_round2(i))
+            # stand_button2.pack()
+            # hit_button2 = tk.Button(buttons2_frame, text="Hit", command=lambda: self.hit(i))
+            # hit_button2.pack()
 
 
         #check if dealer has blackjack
