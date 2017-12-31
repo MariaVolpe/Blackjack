@@ -247,9 +247,13 @@ class Deck:
     #if player chooses to continue playing, call play_round() set to turn 1
     def end_game(self):
 
+        #clear the screen
         self.container_frame.destroy()
 
-        keep_playing_frame = tk.Frame(self.master)
+        self.container_frame = tk.Frame(self.master)
+        self.container_frame.pack()
+
+        keep_playing_frame = tk.Frame(self.container_frame)
         keep_playing_frame.pack()
         #empty hands
         for i in range(self.num_players):
@@ -263,22 +267,26 @@ class Deck:
         
     #ends game and displays scores
     def exit_screen(self):
-        #display score
+        
+        self.container_frame.destroy()
 
         exit_screen = tk.Frame(self.master)
         exit_screen.pack()
 
-        tk.Label(text="Thanks for playing!").pack()
-        tk.Label(text="Final score: ").pack()
-        tk.Label(text="Dealer:").pack()
-        tk.Label(text="Wins: {}".format(self.CPU_dealer.wins) ).pack()
-        tk.Label(text="Losses: {}".format(self.CPU_dealer.losses) ).pack()
+        #display scores
+        tk.Label(exit_screen, text="Thanks for playing!").pack(pady=(0,50))
+        tk.Label(exit_screen, text="Final score: ").pack()
+        tk.Label(exit_screen, text="Dealer:").pack()
+        tk.Label(exit_screen, text="Wins: {}".format(self.CPU_dealer.wins) ).pack()
+        tk.Label(exit_screen, text="Losses: {}".format(self.CPU_dealer.losses) ).pack()
 
-        for i in range(int(player_count)):
-            print("Player {}:".format(i+1) )
-            print("Wins: {}".format(self.players[i].wins) )
-            print("Losses: {}".format(self.players[i].losses) )
-            print("")
+        for i in range(self.num_players):
+            tk.Label(exit_screen, text="Player {}:".format(i+1)).pack()
+            tk.Label(exit_screen, text="Wins: {}".format(self.players[i].wins) ).pack()
+            tk.Label(exit_screen, text="Losses: {}".format(self.players[i].losses) ).pack()
+
+        #quit button
+        tk.Button(exit_screen, text="Quit", command=self.master.destroy).pack()
 
 
     def other(self):
