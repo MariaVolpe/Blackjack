@@ -204,10 +204,10 @@ class Deck:
     def take_turn(self):
         #ask player for hit or stand
         tk.Label(self.buttons1_frame, text="{}'s turn.".format(self.players[0].name)).pack()
-        stand_button = tk.Button(self.buttons1_frame, text="Stand", command=lambda: play_round2(1))
-        stand_button.pack()
-        hit_button = tk.Button(self.buttons1_frame, text="Hit", command=lambda: self.hit(1))
-        hit_button.pack()
+        self.stand_button = tk.Button(self.buttons1_frame, text="Stand", command=lambda: play_round2(1))
+        self.stand_button.pack()
+        self.hit_button = tk.Button(self.buttons1_frame, text="Hit", command=lambda: self.hit(1))
+        self.hit_button.pack()
 
 
     #if 2 players
@@ -219,37 +219,38 @@ class Deck:
             return
 
         if turn == 1:
-
             #ask player for hit or stand
-            tk.Label(self.buttons1_frame, text="{}'s turn:".format(self.players[turn].name)).pack(anchor = "w")
-            stand_button = tk.Button(self.buttons1_frame, text="Stand", command=lambda: self.take_turn(turn+1))
-            stand_button.pack(side="right")
-            hit_button = tk.Button(self.buttons1_frame, text="Hit", command=lambda: self.hit(turn))
-            hit_button.pack(side="left")
+            tk.Label(self.buttons1_frame, text="{}'s turn:".format(self.players[turn-1].name)).pack(anchor = "w")
+            self.stand_button = tk.Button(self.buttons1_frame, text="Stand", command=lambda: self.take_turn(turn+1))
+            self.stand_button.pack(side="right")
+            self.hit_button = tk.Button(self.buttons1_frame, text="Hit", command=lambda: self.hit(turn))
+            self.hit_button.pack(side="left")
 
-            waitlabel = tk.Label(self.buttons2_frame, text="[WAITING]")
-            waitlabel.pack(pady=(0,50))
+            self.waitlabel = tk.Label(self.buttons2_frame, text="[WAITING]")
+            self.waitlabel.pack(pady=(0,50))
 
 
         if turn == 2:
-
-            waitlabel = tk.Label(self.buttons1_frame, text="[WAITING]")
-            waitlabel.pack()
-
-            tk.Label(self.buttons2_frame, text="{}'s turn.".format(self.players[turn-1].name)).pack()
-            stand_button = tk.Button(self.buttons2_frame, text="Stand", command=self.end_turn)
-            stand_button.pack(side="right")
-            hit_button = tk.Button(self.buttons2_frame, text="Hit", command=lambda: self.hit(buttons2_frame, turn) )
-            hit_button.pack(side="left")
+            self.waitlabel.pack_forget()
+            tk.Label(self.buttons2_frame, text="{}'s turn:".format(self.players[turn-1].name)).pack()
+            self.stand_button = tk.Button(self.buttons2_frame, text="Stand", command=self.end_round)
+            self.stand_button.pack(side="right")
+            self.hit_button = tk.Button(self.buttons2_frame, text="Hit", command=lambda: self.hit(turn) )
+            self.hit_button.pack(side="left")
 
 
 
-    def play_round2(turn):
+    def end_round(self):
+        self.stand_button.pack_forget()
+        self.hit_button.pack_forget()
 
 
+
+    def other(self):
         print("")
         #stand
         total = self.total_cards(self.players[i-1].hand)
+
 
         if total > 21:
             print("Bust!")
@@ -373,25 +374,40 @@ class Deck:
         else:
             self.players[1].hand[-1].PrintCard(self.player2_card_canvas,25+xoffset, 25)
 
+        self.stand_button.pack_forget()
+        self.hit_button.pack_forget()
+        
         #stop player from choosing to take another hit if player busts or has blackjack
         if total > 21:
-            return
-        elif total == 21:
-            return
-
-        else:
-            stand_button.forget_pack()
-            hit_button.forget_pack()
             if turn == 1:
-                stand_button = tk.Button(self.buttons1_frame, text="Stand", command=lambda: self.take_turn(turn+1))
-                stand_button.pack(side="right")
-                hit_button = tk.Button(self.buttons1_frame, text="Hit", command=lambda: self.hit(turn))
-                hit_button.pack(side="left")
+                statuslabel = tk.Label(self.buttons1_frame, text="BUST")
+                statuslabel.pack()
+                self.take_turn(turn+1)
             else:
-                stand_button = tk.Button(self.buttons2_frame, text="Stand", command=lambda: self.end_turn)
-                stand_button.pack(side="right")
-                hit_button = tk.Button(self.buttons2_frame, text="Hit", command=lambda: self.hit(turn))
-                hit_button.pack(side="left")
+                statuslabel = tk.Label(self.buttons2_frame, text="BUST")
+                statuslabel.pack()
+                self.end_round()
+        elif total == 21:
+            if turn == 1:
+                statuslabel = tk.Label(self.buttons1_frame, text="Blackjack!")
+                statuslabel.pack()
+                self.take_turn(turn+1)
+            else:
+                statuslabel = tk.Label(self.buttons2_frame, text="Blackjack!")
+                statuslabel.pack()
+                self.end_round()
+        else:
+            
+            if turn == 1:
+                self.stand_button = tk.Button(self.buttons1_frame, text="Stand", command=lambda: self.take_turn(turn+1))
+                self.stand_button.pack(side="right")
+                self.hit_button = tk.Button(self.buttons1_frame, text="Hit", command=lambda: self.hit(turn))
+                self.hit_button.pack(side="left")
+            else:
+                self.stand_button = tk.Button(self.buttons2_frame, text="Stand", command=lambda: self.end_round)
+                self.stand_button.pack(side="right")
+                self.hit_button = tk.Button(self.buttons2_frame, text="Hit", command=lambda: self.hit(turn))
+                self.hit_button.pack(side="left")
 
 def main():
     root = tk.Tk()
