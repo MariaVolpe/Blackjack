@@ -14,12 +14,12 @@ class Cards:
         if self.rank > 10:
             print("{} of {}".format(rank_name[self.rank], suit_name[self.suit]))
             new_card = canvas.create_rectangle(x,y,100+x, 150+y)
-            canvas.create_text((115+x)/2, (180+y)/2, text=self.rank)
+            canvas.create_text((100/2)+x, (150+y)/2, text=self.rank)
             return new_card
         else:
             print("{} of {}".format(self.rank, suit_name[self.suit]))
             new_card = canvas.create_rectangle(x,y,100+x, 150+y)
-            canvas.create_text((115+x)/2, (180+y)/2, text=self.rank)
+            canvas.create_text((100/2)+x, (150+y)/2, text=self.rank)
             return new_card
 class Players:
     

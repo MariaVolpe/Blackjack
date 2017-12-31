@@ -80,10 +80,9 @@ class Deck:
         set_player.destroy()
         self.play_round(1)
 
-    #calls play_round() to play one round, passing in 1 to indicate its player 1's turn
-    #after the a round is finished it resets player hands and asks if user will keep playing
-    #if player chooses to quit, end_game()
-    #if player chooses to continue playing, begin_game() calls itself
+    #after a round is finished, resets player hands and asks if user will keep playing
+    #if player chooses to quit, exit_screen()
+    #if player chooses to continue playing, call play_round() set to turn 1
     def end_game(self):
         keep_playing_frame = tk.Frame(self.master)
         keep_playing_frame.pack()
@@ -95,15 +94,14 @@ class Deck:
         keep_playing = tk.Label(keep_playing_frame,text="Play another round?")
         keep_playing.pack()
         tk.Button(keep_playing_frame, text="Play Again", command=lambda: self.play_round(1)).pack()
-        tk.Button(keep_playing_frame, text="Quit", command=self.end_game2).pack()
+        tk.Button(keep_playing_frame, text="Quit", command=self.exit_screen).pack()
         
     #ends game and displays scores
-    def end_game2(self):
+    def exit_screen(self):
         #display score
 
-        end_game_frame = tk.Frame(self.master)
-        end_game_frame.grid()
-
+        exit_screen = tk.Frame(self.master)
+        exit_screen.pack()
 
         tk.Label(text="Thanks for playing!").pack()
         tk.Label(text="Final score: ").pack()
@@ -132,7 +130,7 @@ class Deck:
         self.buttons1_frame = tk.Frame(self.master)
         self.buttons1_frame.pack()
 
-        canvas_height = 350
+        canvas_height = 250
 
         if self.num_players == 2:
             self.player2_cards_frame = tk.Frame(self.master)
@@ -157,15 +155,15 @@ class Deck:
         dealer_label = tk.Label(self.dealer_cards_frame, text="Dealer's cards:")
         dealer_label.pack(anchor="w", pady=(10,0))
 
-        dealer_card_canvas = tk.Canvas(self.dealer_cards_frame, width="1000", height=canvas_height)
-        dealer_card_canvas.pack()
+        self.dealer_card_canvas = tk.Canvas(self.dealer_cards_frame, width="1000", height=canvas_height)
+        self.dealer_card_canvas.pack()
 
         #returns rectangle that begins top left corner at (25, 25) and ends bottom right at (150,220)
-        dealer_card_1 = self.CPU_dealer.hand[0].PrintCard(dealer_card_canvas,25,25)
+        self.dealer_card_1 = self.CPU_dealer.hand[0].PrintCard(self.dealer_card_canvas,25,25)
 
         #30 pixels in between dealer_card_1 and hidden card
         #begins top left corner at (190, 25) and ends bottom right at (315, 220)
-        dealer_card_hidden = dealer_card_canvas.create_rectangle(180, 25, 180+100, 25+150, fill="blue")
+        self.dealer_card_hidden = self.dealer_card_canvas.create_rectangle(180, 25, 180+100, 25+150, fill="blue")
 
         #show player 1 cards
         player1_label = tk.Label(self.player1_cards_frame, text="{}'s cards: ".format(self.players[0].name))
@@ -198,16 +196,17 @@ class Deck:
         
             self.take_turn(1)
         else:
-            self.take_turn()
+            self.take_turn_p1()
 
     #if one player
-    def take_turn(self):
+    def take_turn_p1(self):
         #ask player for hit or stand
-        tk.Label(self.buttons1_frame, text="{}'s turn.".format(self.players[0].name)).pack()
-        self.stand_button = tk.Button(self.buttons1_frame, text="Stand", command=lambda: play_round2(1))
-        self.stand_button.pack()
-        self.hit_button = tk.Button(self.buttons1_frame, text="Hit", command=lambda: self.hit(1))
-        self.hit_button.pack()
+        self.turn_label = tk.Label(self.buttons1_frame, text="{}'s turn.".format(self.players[0].name))
+        self.turn_label.pack()
+        self.stand_button = tk.Button(self.buttons1_frame, text="Stand", command=self.end_round)
+        self.stand_button.pack(side="right")
+        self.hit_button = tk.Button(self.buttons1_frame, text="Hit", command=self.hit_p1)
+        self.hit_button.pack(side="left")
 
 
     #if 2 players
@@ -220,7 +219,8 @@ class Deck:
 
         if turn == 1:
             #ask player for hit or stand
-            tk.Label(self.buttons1_frame, text="{}'s turn:".format(self.players[turn-1].name)).pack(anchor = "w")
+            self.turn_label = tk.Label(self.buttons1_frame, text="{}'s turn:".format(self.players[turn-1].name))
+            self.turn_label.pack(anchor = "w")
             self.stand_button = tk.Button(self.buttons1_frame, text="Stand", command=lambda: self.take_turn(turn+1))
             self.stand_button.pack(side="right")
             self.hit_button = tk.Button(self.buttons1_frame, text="Hit", command=lambda: self.hit(turn))
@@ -229,28 +229,34 @@ class Deck:
             self.waitlabel = tk.Label(self.buttons2_frame, text="[WAITING]")
             self.waitlabel.pack(pady=(0,50))
 
-
         if turn == 2:
             self.waitlabel.pack_forget()
-            tk.Label(self.buttons2_frame, text="{}'s turn:".format(self.players[turn-1].name)).pack()
+            self.stand_button.pack_forget()
+            self.hit_button.pack_forget()
+            self.turn_label.pack_forget()
+
+            self.turn_label = tk.Label(self.buttons2_frame, text="{}'s turn:".format(self.players[turn-1].name))
+            self.turn_label.pack()
             self.stand_button = tk.Button(self.buttons2_frame, text="Stand", command=self.end_round)
             self.stand_button.pack(side="right")
             self.hit_button = tk.Button(self.buttons2_frame, text="Hit", command=lambda: self.hit(turn) )
             self.hit_button.pack(side="left")
 
 
-
     def end_round(self):
         self.stand_button.pack_forget()
         self.hit_button.pack_forget()
+        self.turn_label.pack_forget()
 
+        #show hidden dealer card
+        self.dealer_card_canvas.delete(self.dealer_card_hidden)
+        self.dealer_card_hidden = self.CPU_dealer.hand[1].PrintCard(self.dealer_card_canvas,180,25)
 
 
     def other(self):
         print("")
         #stand
         total = self.total_cards(self.players[i-1].hand)
-
 
         if total > 21:
             print("Bust!")
@@ -277,6 +283,8 @@ class Deck:
                 self.players[i].wins += 1
                 self.CPU_dealer.wins += 1
             print("")
+
+        #self.end_game()
             
 
     # def end_round(self):
@@ -360,6 +368,38 @@ class Deck:
             self.cards_in_deck[i].PrintCard()
 
 
+    def hit_p1(self):
+        xoffset = 155*len(self.players[0].hand)
+        self.players[0].hand.append(self.draw_card())
+        total = self.total_cards(self.players[0].hand)
+            
+        #print new card
+        self.players[0].hand[-1].PrintCard(self.player1_card_canvas,25+xoffset, 25)
+    
+        self.stand_button.pack_forget()
+        self.hit_button.pack_forget()
+        
+        #stop player from choosing to take another hit if player busts or has blackjack
+        if total > 21:
+            self.turn_label.pack_forget()
+            statuslabel = tk.Label(self.buttons1_frame, text="BUST")
+            statuslabel.pack()
+            self.end_round()
+           
+        elif total == 21:
+            self.turn_label.pack_forget()
+            statuslabel = tk.Label(self.buttons1_frame, text="Blackjack!")
+            statuslabel.pack()
+            self.end_round()
+            
+        else:
+            self.stand_button = tk.Button(self.buttons1_frame, text="Stand", command=lambda: self.end_round)
+            self.stand_button.pack(side="right")
+            self.hit_button = tk.Button(self.buttons1_frame, text="Hit", command=self.hit_p1)
+            self.hit_button.pack(side="left")
+
+
+
     #logic for if a player chooses a hit
     #draw a card and add it to player's hand
     #allow player to continue choosing to hit until player busts
@@ -379,6 +419,7 @@ class Deck:
         
         #stop player from choosing to take another hit if player busts or has blackjack
         if total > 21:
+            self.turn_label.pack_forget()
             if turn == 1:
                 statuslabel = tk.Label(self.buttons1_frame, text="BUST")
                 statuslabel.pack()
@@ -388,6 +429,7 @@ class Deck:
                 statuslabel.pack()
                 self.end_round()
         elif total == 21:
+            self.turn_label.pack_forget()
             if turn == 1:
                 statuslabel = tk.Label(self.buttons1_frame, text="Blackjack!")
                 statuslabel.pack()
@@ -397,7 +439,6 @@ class Deck:
                 statuslabel.pack()
                 self.end_round()
         else:
-            
             if turn == 1:
                 self.stand_button = tk.Button(self.buttons1_frame, text="Stand", command=lambda: self.take_turn(turn+1))
                 self.stand_button.pack(side="right")
