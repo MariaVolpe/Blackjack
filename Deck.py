@@ -43,7 +43,7 @@ class Deck:
 
         tk.Label(greet_screen, text = "How many players?").pack(pady=(253,0), anchor="center")
 
-        player_count = tk.IntVar()
+        player_count = tk.IntVar(None, 1)
         tk.Radiobutton(greet_screen, text="1", variable=player_count, value=1).pack(anchor="w")
         tk.Radiobutton(greet_screen, text="2", variable=player_count, value=2).pack(anchor="w")
         
@@ -66,9 +66,11 @@ class Deck:
             e.append( tk.Entry(set_player) )
 
         labels[0].pack(pady=(253,0))
+        e[0].insert(0,"Player {}".format(1))
         e[0].pack()
         if self.num_players == 2:
             labels[1].pack()
+            e[1].insert(0,"Player {}".format(2))
             e[1].pack()
 
         tk.Button(set_player, text="OK!", command=lambda: self.end_set_player(set_player, e)).pack()
@@ -278,12 +280,12 @@ class Deck:
         tk.Label(exit_screen, text="Final score: ").pack()
         tk.Label(exit_screen, text="Dealer:").pack()
         tk.Label(exit_screen, text="Wins: {}".format(self.CPU_dealer.wins) ).pack()
-        tk.Label(exit_screen, text="Losses: {}".format(self.CPU_dealer.losses) ).pack()
+        tk.Label(exit_screen, text="Losses: {}".format(self.CPU_dealer.losses) ).pack(pady=(0,20))
 
         for i in range(self.num_players):
             tk.Label(exit_screen, text="Player {}:".format(i+1)).pack()
             tk.Label(exit_screen, text="Wins: {}".format(self.players[i].wins) ).pack()
-            tk.Label(exit_screen, text="Losses: {}".format(self.players[i].losses) ).pack()
+            tk.Label(exit_screen, text="Losses: {}".format(self.players[i].losses) ).pack(pady=(0,20))
 
         #quit button
         tk.Button(exit_screen, text="Quit", command=self.master.destroy).pack()
