@@ -16,6 +16,9 @@ class Deck:
         self.master.minsize(width=1000, height=760)
         self.master.maxsize(width=1000, height=760)
 
+        self.container_frame = tk.Frame(self.master)
+        self.container_frame.pack()
+
         rank_count = 2
         suit_count = 1
         for i in range(52):
@@ -32,7 +35,7 @@ class Deck:
     #calls start_set_player() when player selects an option
     def setup_game(self):
 
-        greet_screen = tk.Frame(self.master)
+        greet_screen = tk.Frame(self.container_frame)
         greet_screen.pack()
 
         greetings = tk.Label(greet_screen, text = "Welcome to Blackjack!")
@@ -53,7 +56,7 @@ class Deck:
         greet_screen.destroy()
         self.num_players = player_count.get()
 
-        set_player = tk.Frame(self.master)
+        set_player = tk.Frame(self.container_frame)
         set_player.pack()
         e = []
         labels = []
@@ -80,40 +83,7 @@ class Deck:
         set_player.destroy()
         self.play_round(1)
 
-    #after a round is finished, resets player hands and asks if user will keep playing
-    #if player chooses to quit, exit_screen()
-    #if player chooses to continue playing, call play_round() set to turn 1
-    def end_game(self):
-        keep_playing_frame = tk.Frame(self.master)
-        keep_playing_frame.pack()
-        #empty hands
-        for i in range(self.num_players):
-            self.CPU_dealer.hand = []
-            self.players[i].hand = []
-            
-        keep_playing = tk.Label(keep_playing_frame,text="Play another round?")
-        keep_playing.pack()
-        tk.Button(keep_playing_frame, text="Play Again", command=lambda: self.play_round(1)).pack()
-        tk.Button(keep_playing_frame, text="Quit", command=self.exit_screen).pack()
-        
-    #ends game and displays scores
-    def exit_screen(self):
-        #display score
-
-        exit_screen = tk.Frame(self.master)
-        exit_screen.pack()
-
-        tk.Label(text="Thanks for playing!").pack()
-        tk.Label(text="Final score: ").pack()
-        tk.Label(text="Dealer:").pack()
-        tk.Label(text="Wins: {}".format(self.CPU_dealer.wins) ).pack()
-        tk.Label(text="Losses: {}".format(self.CPU_dealer.losses) ).pack()
-
-        for i in range(int(player_count)):
-            print("Player {}:".format(i+1) )
-            print("Wins: {}".format(self.players[i].wins) )
-            print("Losses: {}".format(self.players[i].losses) )
-            print("")
+   
     
 
     #begins to play one round
@@ -121,22 +91,22 @@ class Deck:
     #if turn == 2 it is player 2's turn
     def play_round(self, turn):
 
-        self.dealer_cards_frame = tk.Frame(self.master)
+        self.dealer_cards_frame = tk.Frame(self.container_frame)
         self.dealer_cards_frame.pack()
 
-        self.player1_cards_frame = tk.Frame(self.master)
+        self.player1_cards_frame = tk.Frame(self.container_frame)
         self.player1_cards_frame.pack()
 
-        self.buttons1_frame = tk.Frame(self.master)
+        self.buttons1_frame = tk.Frame(self.container_frame)
         self.buttons1_frame.pack()
 
         canvas_height = 250
 
         if self.num_players == 2:
-            self.player2_cards_frame = tk.Frame(self.master)
+            self.player2_cards_frame = tk.Frame(self.container_frame)
             self.player2_cards_frame.pack()
             
-            self.buttons2_frame = tk.Frame(self.master)
+            self.buttons2_frame = tk.Frame(self.container_frame)
             self.buttons2_frame.pack(side="bottom")
 
             canvas_height = 180
@@ -249,8 +219,66 @@ class Deck:
         self.turn_label.pack_forget()
 
         #show hidden dealer card
+        xoffset = 2*155
+        total = self.total_cards(self.CPU_dealer.hand)
         self.dealer_card_canvas.delete(self.dealer_card_hidden)
         self.dealer_card_hidden = self.CPU_dealer.hand[1].PrintCard(self.dealer_card_canvas,180,25)
+
+        self.dealer_card_canvas.create_text(xoffset+30, 25+145, text="Hand value: {}".format(total))
+
+        total = self.total_cards(self.players[0].hand)
+        xoffset = 155*(len(self.players[0].hand))
+        self.player1_card_canvas.create_text(xoffset+30, 25+145, text="Hand value: {}".format(total))
+
+        if self.num_players == 2:
+            total = self.total_cards(self.players[1].hand)
+            xoffset = 155*(len(self.players[1].hand))
+            self.player2_card_canvas.create_text(xoffset+30, 25+145, text="Hand value: {}".format(total))
+            next_button = tk.Button(self.buttons2_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
+            next_button.pack(side="right", padx = (910, 0), pady = (40,0))
+
+        else:
+            next_button = tk.Button(self.buttons1_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
+            next_button.pack(side="right", padx = (910, 0), pady = (160,0))
+
+
+    #after a round is finished, resets player hands and asks if user will keep playing
+    #if player chooses to quit, exit_screen()
+    #if player chooses to continue playing, call play_round() set to turn 1
+    def end_game(self):
+
+        self.container_frame.destroy()
+
+        keep_playing_frame = tk.Frame(self.master)
+        keep_playing_frame.pack()
+        #empty hands
+        for i in range(self.num_players):
+            self.CPU_dealer.hand = []
+            self.players[i].hand = []
+            
+        keep_playing = tk.Label(keep_playing_frame,text="Play another round?")
+        keep_playing.pack()
+        tk.Button(keep_playing_frame, text="Play Again", command=lambda: self.play_round(1)).pack()
+        tk.Button(keep_playing_frame, text="Quit", command=self.exit_screen).pack()
+        
+    #ends game and displays scores
+    def exit_screen(self):
+        #display score
+
+        exit_screen = tk.Frame(self.master)
+        exit_screen.pack()
+
+        tk.Label(text="Thanks for playing!").pack()
+        tk.Label(text="Final score: ").pack()
+        tk.Label(text="Dealer:").pack()
+        tk.Label(text="Wins: {}".format(self.CPU_dealer.wins) ).pack()
+        tk.Label(text="Losses: {}".format(self.CPU_dealer.losses) ).pack()
+
+        for i in range(int(player_count)):
+            print("Player {}:".format(i+1) )
+            print("Wins: {}".format(self.players[i].wins) )
+            print("Losses: {}".format(self.players[i].losses) )
+            print("")
 
 
     def other(self):
