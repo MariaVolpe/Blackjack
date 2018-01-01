@@ -13,9 +13,10 @@ class Deck:
         self.master = master
         self.num_players = 0
 
-        self.master.minsize(width=1000, height=760)
-        self.master.maxsize(width=1000, height=760)
+        self.master.minsize(width=1024, height=760)
+        self.master.maxsize(width=1024, height=760)
 
+        #frame to hold all elements. can be destroyed to quickly clear screen
         self.container_frame = tk.Frame(self.master)
         self.container_frame.pack()
 
@@ -36,26 +37,72 @@ class Deck:
     #greets players and gets information about player number
     #calls start_set_player() when player selects an option
     def setup_game(self):
-
+        self.container_frame.destroy()
+        self.container_frame = tk.Frame(self.master)
+        self.container_frame.pack()
+        
         greet_screen = tk.Frame(self.container_frame)
         greet_screen.pack()
 
-        greetings = tk.Label(greet_screen, text = "Welcome to Blackjack!")
-        greetings.pack(anchor="center", pady=(50,0))
+        tk.Label(greet_screen, text = "Welcome to Blackjack!").pack(anchor="center", pady=(50,0))
+        tk.Button(greet_screen, text="Rules", command=self.rules).pack()
+        tk.Button(greet_screen, text="Play", command=self.get_player_info).pack()
+        
+        
+    def rules(self):
+        self.container_frame.destroy()
+        self.container_frame = tk.Frame(self.master)
+        self.container_frame.pack()
 
-        tk.Label(greet_screen, text = "How many players?").pack(pady=(253,0), anchor="center")
+        rules_screen = tk.Frame(self.container_frame)
+        rules_screen.pack()
+
+        tk.Label(rules_screen, text = "Rules of Blackjack:").pack(anchor="w")
+        tk.Label(rules_screen, text = "• Players compete against the dealer: ").pack(anchor="w")
+        tk.Label(rules_screen, text = "         • A player's hand's worth is compared against the worth of the dealer's hand.").pack(anchor="w")
+        tk.Label(rules_screen, text = "         • Whoever's hand is closest to 21, but not greater than 21, wins.").pack(anchor="w")
+        tk.Label(rules_screen, text = "• If a player's hand is worth more than 21, the player \"busts\" and loses.").pack(anchor="w")
+        tk.Label(rules_screen, text = "• If a player's hand is worth exactly 21, the player has Blackjack and wins unless the dealer also has Blackjack.").pack(anchor="w")
+        tk.Label(rules_screen, text = "• Any time the dealer and a player have a hand worth the same but not over 21, there is a tie.").pack(anchor="w")
+        tk.Label(rules_screen, text = "• Everyone in the game is initially dealt 2 cards.").pack(anchor="w")
+        tk.Label(rules_screen, text = "         • The dealer's second card is dealt face down and at first, only the dealer is allowed to know its value.").pack(anchor="w")
+        tk.Label(rules_screen, text = "         • All player cards are dealt face up.").pack(anchor="w")
+        tk.Label(rules_screen, text = "         • Players can choose to \"hit\" and have another card added to their hand.").pack(anchor="w")
+        tk.Label(rules_screen, text = "         • Players can hit as many times as they like until they bust.").pack(anchor="w")
+        tk.Label(rules_screen, text = "         • Players can also choose to \"stand\", or to not have any cards added to their hand.").pack(anchor="w")
+        tk.Label(rules_screen, text = "         • The dealer moves after all other players have moved, revealing the hidden card and then choosing hit or stand.").pack(anchor="w")
+        tk.Label(rules_screen, text = "• Numbered cards are worth their face value.").pack(anchor="w")
+        tk.Label(rules_screen, text = "• Jacks, Queens, and Kings are worth 10.").pack(anchor="w")
+        tk.Label(rules_screen, text = "• An Ace is worth either 1 or 11, depending on which value is more advantageous.").pack(anchor="w")
+        tk.Label(rules_screen, text = "• The deck reshuffles after 50% of it has been used.").pack(anchor="w")
+        tk.Label(rules_screen, text = "• This game uses a S17 rule for the dealer:").pack(anchor="w")
+        tk.Label(rules_screen, text = "         • The dealer will stand if their hand value is 17 or above.").pack(anchor="w")
+
+        tk.Button(rules_screen, text="Back", command=self.setup_game).pack()
+
+    def get_player_info(self):
+        self.container_frame.destroy()
+        self.container_frame = tk.Frame(self.master)
+        self.container_frame.pack()
+        
+        player_info_frame = tk.Frame(self.container_frame)
+        player_info_frame.pack()
+
+        tk.Label(player_info_frame, text = "How many players?").pack(pady=(253,0), anchor="center")
 
         player_count = tk.IntVar(None, 1)
-        tk.Radiobutton(greet_screen, text="1", variable=player_count, value=1).pack(anchor="w")
-        tk.Radiobutton(greet_screen, text="2", variable=player_count, value=2).pack(anchor="w")
+        tk.Radiobutton(player_info_frame, text="1", variable=player_count, value=1).pack(anchor="w")
+        tk.Radiobutton(player_info_frame, text="2", variable=player_count, value=2).pack(anchor="w")
         
-        tk.Button(greet_screen, text="OK!", command=lambda: self.start_set_player(greet_screen, player_count)).pack()
-        
+        tk.Button(player_info_frame, text="OK!", command=lambda: self.start_set_player(player_count)).pack()
 
     #gets player names from user(s)
     #call end_set_player() when finished
-    def start_set_player(self, greet_screen, player_count):
-        greet_screen.destroy()
+    def start_set_player(self, player_count):
+        self.container_frame.destroy()
+        self.container_frame = tk.Frame(self.master)
+        self.container_frame.pack()
+
         self.num_players = player_count.get()
 
         set_player = tk.Frame(self.container_frame)
@@ -219,10 +266,10 @@ class Deck:
             self.waitlabel.pack(pady=(0,50))
 
         if turn == 2:
-            self.waitlabel.pack_forget()
-            self.stand_button.pack_forget()
-            self.hit_button.pack_forget()
-            self.turn_label.pack_forget()
+            self.waitlabel.destroy()
+            self.stand_button.destroy()
+            self.hit_button.destroy()
+            self.turn_label.destroy()
 
             self.turn_label = tk.Label(self.buttons2_frame, text="{}'s turn:".format(self.players[turn-1].name))
             self.turn_label.pack()
@@ -234,9 +281,9 @@ class Deck:
 
     #after players are done making decisions, calculate scores and if they won or lost
     def end_round(self):
-        self.stand_button.pack_forget()
-        self.hit_button.pack_forget()
-        self.turn_label.pack_forget()
+        self.stand_button.destroy()
+        self.hit_button.destroy()
+        self.turn_label.destroy()
 
         #show hidden dealer card
         xoffset = 2*155
@@ -302,7 +349,7 @@ class Deck:
 
         if self.num_players == 1:
             next_button = tk.Button(self.buttons1_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
-            next_button.pack(side="right", padx = (910, 0), pady = (160,0))
+            next_button.pack(side="right", padx = (910, 0), pady = (130,0))
         else:
             next_button = tk.Button(self.buttons2_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
             next_button.pack(side="right", padx = (910, 0), pady = (40,0))
@@ -353,8 +400,14 @@ class Deck:
         
     
     def dealer_blackjack(self):
+
+        self.dealer_card_canvas.delete(self.dealer_card_hidden)
+        for i in self.lines:
+            self.dealer_card_canvas.delete(i)
+        self.dealer_card_hidden = self.CPU_dealer.hand[1].PrintCard(self.dealer_card_canvas,180,25)
+
         xoffset = 155*(len(self.CPU_dealer.hand))
-        self.dealer_card_canvas.create_text(xoffset+100, 25+145, text="- Blackjack!")
+        self.dealer_card_canvas.create_text(xoffset+30, 25+145, text="- Blackjack!")
         
         #check if any players also have blackjack. if not, end the round
         for i in range(self.num_players):
@@ -441,18 +494,18 @@ class Deck:
         #print new card
         self.players[0].hand[-1].PrintCard(self.player1_card_canvas,25+xoffset, 25)
     
-        self.stand_button.pack_forget()
-        self.hit_button.pack_forget()
+        self.stand_button.destroy()
+        self.hit_button.destroy()
         
         #stop player from choosing to take another hit if player busts or has blackjack
         if total > 21:
-            self.turn_label.pack_forget()
+            self.turn_label.destroy()
             statuslabel = tk.Label(self.buttons1_frame, text="BUST")
             statuslabel.pack()
             self.end_round()
            
         elif total == 21:
-            self.turn_label.pack_forget()
+            self.turn_label.destroy()
             statuslabel = tk.Label(self.buttons1_frame, text="Blackjack!")
             statuslabel.pack()
             self.end_round()
@@ -479,12 +532,12 @@ class Deck:
         else:
             self.players[1].hand[-1].PrintCard(self.player2_card_canvas,25+xoffset, 25)
 
-        self.stand_button.pack_forget()
-        self.hit_button.pack_forget()
+        self.stand_button.destroy()
+        self.hit_button.destroy()
         
         #stop player from choosing to take another hit if player busts or has blackjack
         if total > 21:
-            self.turn_label.pack_forget()
+            self.turn_label.destroy()
             if turn == 1:
                 statuslabel = tk.Label(self.buttons1_frame, text="BUST")
                 statuslabel.pack()
@@ -494,7 +547,7 @@ class Deck:
                 statuslabel.pack()
                 self.end_round()
         elif total == 21:
-            self.turn_label.pack_forget()
+            self.turn_label.destroy()
             if turn == 1:
                 statuslabel = tk.Label(self.buttons1_frame, text="Blackjack!")
                 statuslabel.pack()
