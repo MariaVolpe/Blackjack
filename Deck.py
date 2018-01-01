@@ -227,55 +227,72 @@ class Deck:
 
         #show hidden dealer card
         xoffset = 2*155
-        dealer_total = self.total_cards(self.CPU_dealer.hand)
+        
         self.dealer_card_canvas.delete(self.dealer_card_hidden)
         self.dealer_card_hidden = self.CPU_dealer.hand[1].PrintCard(self.dealer_card_canvas,180,25)
 
+        #dealer takes hits until dealer's hand reaches a total of 17
+        dealer_total = self.total_cards(self.CPU_dealer.hand)
+        while dealer_total < 17:
+            self.CPU_dealer.hand.append(self.draw_card())
+            self.CPU_dealer.hand[-1].PrintCard(self.dealer_card_canvas,25+xoffset, 25)
+            xoffset += 155
+            dealer_total = self.total_cards(self.CPU_dealer.hand)
         self.dealer_card_canvas.create_text(xoffset+30, 25+145, text="Hand value: {}".format(dealer_total))
 
         p1_total = self.total_cards(self.players[0].hand)
         xoffset = 155*(len(self.players[0].hand))
         self.player1_card_canvas.create_text(xoffset+30, 25+145, text="Hand value: {}".format(p1_total))
 
-        #if p1 busts
-        if p1_total > 21:
-            self.players[0].losses += 1
-            self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- LOSE")
-        #dealer wins against p1
-        elif dealer_total > p1_total:
-            self.players[0].losses += 1
-            self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- LOSE")
-        elif dealer_total == p1_total:
-            self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- TIE")
-        else:
-            self.players[0].wins += 1
-            self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- WIN")
-
         if self.num_players == 2:
             p2_total = self.total_cards(self.players[1].hand)
             xoffset = 155*(len(self.players[1].hand))
             self.player2_card_canvas.create_text(xoffset+30, 25+145, text="Hand value: {}".format(p2_total))
-            next_button = tk.Button(self.buttons2_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
-            next_button.pack(side="right", padx = (910, 0), pady = (40,0))
 
-            #if p1 busts
-            if p2_total > 21:
-                self.players[1].losses += 1
-                self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- LOSE")
-            #dealer wins against p2
-            elif dealer_total > p2_total:
-                self.players[1].losses += 1
+        if dealer_total > 21:
+            xoffset = 155*(len(self.CPU_dealer.hand))
+            self.dealer_card_canvas.create_text(xoffset+100, 25+145, text="- BUST")
+            xoffset = 155*(len(self.players[0].hand))
+            self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- WIN")
+            if self.num_players == 2:
+                xoffset = 155*(len(self.players[1].hand))
                 self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- WIN")
-            elif dealer_total == p1_total:
-                self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- TIE")
-            else:
-                self.players[1].wins += 1
-                self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- WIN")
-
         else:
+            #if p1 busts
+            if p1_total > 21:
+                self.players[0].losses += 1
+                self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- LOSE")
+            #dealer wins against p1
+            elif dealer_total > p1_total:
+                self.players[0].losses += 1
+                self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- LOSE")
+            elif dealer_total == p1_total:
+                self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- TIE")
+            else:
+                self.players[0].wins += 1
+                self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- WIN")
+
+            if self.num_players == 2:
+                #if p2 busts
+                if p2_total > 21:
+                    self.players[1].losses += 1
+                    self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- LOSE")
+               #dealer wins against p2
+                elif dealer_total > p2_total:
+                    self.players[1].losses += 1
+                    self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- LOSE")
+                elif dealer_total == p2_total:
+                    self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- TIE")
+                else:
+                    self.players[1].wins += 1
+                    self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- WIN")
+
+        if self.num_players == 1:
             next_button = tk.Button(self.buttons1_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
             next_button.pack(side="right", padx = (910, 0), pady = (160,0))
-
+        else:
+            next_button = tk.Button(self.buttons2_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
+            next_button.pack(side="right", padx = (910, 0), pady = (40,0))
 
 
     #after a round is finished, resets player hands and asks if user will keep playing
