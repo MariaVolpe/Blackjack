@@ -251,7 +251,7 @@ class Deck:
 
         if dealer_total > 21:
             xoffset = 155*(len(self.CPU_dealer.hand))
-            self.dealer_card_canvas.create_text(xoffset+100, 25+145, text="- BUST")
+            self.dealer_card_canvas.create_text(xoffset+100, 25+145, text=" - BUST")
             xoffset = 155*(len(self.players[0].hand))
             self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- WIN")
             if self.num_players == 2:
@@ -315,8 +315,8 @@ class Deck:
             
         keep_playing = tk.Label(keep_playing_frame,text="Play another round?")
         keep_playing.pack()
-        tk.Button(keep_playing_frame, text="Play Again", command=lambda: self.play_round(1)).pack()
-        tk.Button(keep_playing_frame, text="Quit", command=self.exit_screen).pack()
+        tk.Button(keep_playing_frame, text="Play Again", command=lambda: self.play_round(1)).pack(side="left")
+        tk.Button(keep_playing_frame, text="Quit", command=self.exit_screen).pack(side="right")
         
     #ends game and displays scores
     def exit_screen(self):
@@ -445,7 +445,7 @@ class Deck:
             self.end_round()
             
         else:
-            self.stand_button = tk.Button(self.buttons1_frame, text="Stand", command=lambda: self.end_round)
+            self.stand_button = tk.Button(self.buttons1_frame, text="Stand", command=self.end_round)
             self.stand_button.pack(side="right")
             self.hit_button = tk.Button(self.buttons1_frame, text="Hit", command=self.hit_p1)
             self.hit_button.pack(side="left")
@@ -497,7 +497,7 @@ class Deck:
                 self.hit_button = tk.Button(self.buttons1_frame, text="Hit", command=lambda: self.hit(turn))
                 self.hit_button.pack(side="left")
             else:
-                self.stand_button = tk.Button(self.buttons2_frame, text="Stand", command=lambda: self.end_round)
+                self.stand_button = tk.Button(self.buttons2_frame, text="Stand", command=self.end_round)
                 self.stand_button.pack(side="right")
                 self.hit_button = tk.Button(self.buttons2_frame, text="Hit", command=lambda: self.hit(turn))
                 self.hit_button.pack(side="left")
