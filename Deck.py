@@ -19,6 +19,8 @@ class Deck:
         self.container_frame = tk.Frame(self.master)
         self.container_frame.pack()
 
+        self.card_count = 0
+
         rank_count = 2
         suit_count = 1
         for i in range(52):
@@ -217,6 +219,7 @@ class Deck:
             self.hit_button.pack(side="left")
 
 
+    #after players are done making decisions, calculate scores and if they won or lost
     def end_round(self):
         self.stand_button.pack_forget()
         self.hit_button.pack_forget()
@@ -242,6 +245,8 @@ class Deck:
         elif dealer_total > p1_total:
             self.players[0].losses += 1
             self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- LOSE")
+        elif dealer_total == p1_total:
+            self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- TIE")
         else:
             self.players[0].wins += 1
             self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- WIN")
@@ -261,7 +266,8 @@ class Deck:
             elif dealer_total > p2_total:
                 self.players[1].losses += 1
                 self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- WIN")
-
+            elif dealer_total == p1_total:
+                self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- TIE")
             else:
                 self.players[1].wins += 1
                 self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- WIN")
@@ -306,9 +312,6 @@ class Deck:
         #display scores
         tk.Label(exit_screen, text="Thanks for playing!").pack(pady=(0,50))
         tk.Label(exit_screen, text="Final score: ").pack()
-        # tk.Label(exit_screen, text="Dealer:").pack()
-        # tk.Label(exit_screen, text="Wins: {}".format(self.CPU_dealer.wins) ).pack()
-        # tk.Label(exit_screen, text="Losses: {}".format(self.CPU_dealer.losses) ).pack(pady=(0,20))
 
         for i in range(self.num_players):
             tk.Label(exit_screen, text="Player {}:".format(i+1)).pack()
@@ -317,79 +320,35 @@ class Deck:
 
         #quit button
         tk.Button(exit_screen, text="Quit", command=self.master.destroy).pack()
-
-
-    def other(self):
-        print("")
-        #stand
-        total = self.total_cards(self.players[i-1].hand)
-
-        if total > 21:
-            print("Bust!")
-            self.players[i].losses += 1
-                
-        elif total == 21:
-            #blackjack
-            print("Player {} has Blackjack!".format(i+1) )
-            self.players[i].wins += 1
-
-        else:
-            total = self.total_cards(self.players[i].hand)
-            dealer_total = self.total_cards(self.CPU_dealer.hand)
-            print("Player {}'s hand adds up to {}.".format(i+1, total) )
-            print("The dealer's hand adds up to {}.".format(dealer_total) )
-            if dealer_total < total:
-                print("Player {} wins!".format(i+1) )
-                self.players[i].wins += 1
-            elif dealer_total > total:
-                print("The dealer wins!")
-                self.CPU_dealer.wins += 1
-            else:
-                print("It's a tie!")
-                self.players[i].wins += 1
-                self.CPU_dealer.wins += 1
-            print("")
-
-        #self.end_game()
-            
-
-    # def end_round(self):
-    #     dealer_cards_frame.destroy()
-    #     player1_cards_frame.destroy()
-    #     buttons1_frame.destroy()
-    #     if self.num_players == 2:
-    #         player2_cards_frame.destroy()
-    #         buttons2_frame.destroy()
         
     
     def dealer_blackjack(self):
-        print("The dealer has Blackjack!")
-
-        print("Dealer's cards: ")
-        #for j in self.CPU_dealer.hand:
-            #j.PrintCard()
-        player_win = 0
-        winning_player = []
+        xoffset = 155*(len(self.CPU_dealer.hand))
+        self.dealer_card_canvas.create_text(xoffset+100, 25+145, text="- Blackjack!")
+        
         #check if any players also have blackjack. if not, end the round
         for i in range(self.num_players):
             total = self.total_cards(self.players[i].hand)
-            if total == 21:
-                print("Player {} also has Blackjack!".format(i+1) )
-                player_win += 1
-                winning_player.append(i)
+            xoffset = 155*(len(self.players[i].hand))
+            if i == 0:
+                self.player1_card_canvas.create_text(xoffset+30, 25+145, text="Hand value: {}".format(total))
+                if total == 21:
+                    self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- TIE")
+                else:
+                    self.player1_card_canvas.create_text(xoffset+100, 25+145, text="- LOSE")
             else:
-                print("Player {} loses their bet.".format(i+1) )
+                self.player2_card_canvas.create_text(xoffset+30, 25+145, text="Hand value: {}".format(total))
+                if total == 21:
+                    self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- TIE")
+                else:
+                    self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- LOSE")
 
-            if player_win == 0:
-                self.CPU_dealer.wins += 1
-
-            elif player_win == 1:
-                print("Player {} and the dealer have tied.".format(player[winning_player]) )
-            else:
-                print("All players and the dealer have tied.")
-
-            print("")
-
+        if self.num_players == 1:
+            next_button = tk.Button(self.buttons1_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
+            next_button.pack(side="right", padx = (910, 0), pady = (160,0))
+        else:
+            next_button = tk.Button(self.buttons2_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
+            next_button.pack(side="right", padx = (910, 0), pady = (40,0))
 
 #####
 # utility functions 
@@ -419,6 +378,7 @@ class Deck:
 
     #returns a random card out of the cards_in_deck
     #if card is not marked as in the deck in play, another index is generated
+    #if more than 26 cards (50% of deck) have been drawn, reset the deck
     def draw_card(self):
         random.seed(a=None, version=2)
         condition = False
@@ -426,6 +386,11 @@ class Deck:
             i = random.randrange(52)
             condition = self.cards_in_deck[i].in_deck
         self.cards_in_deck[i].in_deck = False
+
+        self.card_count += 1
+        if self.card_count > 26:
+            self.reshuffle()
+
         return self.cards_in_deck[i]
 
     #print suit and rank of entire deck
@@ -433,6 +398,10 @@ class Deck:
         for i in range(52):
             self.cards_in_deck[i].PrintCard()
 
+    #reshuffle deck in use by flagging all cards as being in the deck
+    def reshuffle(self):
+        for i in self.cards_in_deck:
+            i.in_deck = True
 
     def hit_p1(self):
         xoffset = 155*len(self.players[0].hand)
