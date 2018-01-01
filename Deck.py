@@ -134,12 +134,21 @@ class Deck:
         self.dealer_card_canvas = tk.Canvas(self.dealer_cards_frame, width="1000", height=canvas_height)
         self.dealer_card_canvas.pack()
 
-        #returns rectangle that begins top left corner at (25, 25) and ends bottom right at (150,220)
         self.dealer_card_1 = self.CPU_dealer.hand[0].PrintCard(self.dealer_card_canvas,25,25)
 
         #30 pixels in between dealer_card_1 and hidden card
-        #begins top left corner at (190, 25) and ends bottom right at (315, 220)
+        #print dealer card, which is shown face down
+        #card begins at (180, 25) and ends at (280, 175)
         self.dealer_card_hidden = self.dealer_card_canvas.create_rectangle(180, 25, 180+100, 25+150, fill="blue")
+        
+        #draw back of card
+        self.lines=[]
+        self.lines.append(self.dealer_card_canvas.create_line(180+75, 25, 180+100, 25+(75/2), fill="light blue"))
+        #self.dealer_card_canvas.create_line(180, 25, 180+100, 25+150, fill="light blue")
+        self.lines.append(self.dealer_card_canvas.create_line(180+25, 25, 180+100, 25+75+(75/2), fill="light blue"))
+        self.lines.append(self.dealer_card_canvas.create_line(180, 25+75, 180+50, 25+150, fill="light blue"))
+        self.lines.append(self.dealer_card_canvas.create_line(180+50, 25, 180+100, 25+75, fill="light blue"))
+        self.lines.append(self.dealer_card_canvas.create_line(180, 25+110, 180+25, 25+150, fill="light blue"))
 
         #show player 1 cards
         player1_label = tk.Label(self.player1_cards_frame, text="{}'s cards: ".format(self.players[0].name))
@@ -174,8 +183,12 @@ class Deck:
         else:
             self.take_turn_p1()
 
-    #if one player
+    #begin turn for one player
     def take_turn_p1(self):
+        total = self.total_cards(self.CPU_dealer.hand)
+        if total == 21:
+            self.dealer_blackjack()
+            return
         #ask player for hit or stand
         self.turn_label = tk.Label(self.buttons1_frame, text="{}'s turn.".format(self.players[0].name))
         self.turn_label.pack()
@@ -185,7 +198,7 @@ class Deck:
         self.hit_button.pack(side="left")
 
 
-    #if 2 players
+    #begin turn for 2 players
     def take_turn(self, turn):
         #check if dealer has blackjack
         total = self.total_cards(self.CPU_dealer.hand)
@@ -229,6 +242,8 @@ class Deck:
         xoffset = 2*155
         
         self.dealer_card_canvas.delete(self.dealer_card_hidden)
+        for i in self.lines:
+            self.dealer_card_canvas.delete(i)
         self.dealer_card_hidden = self.CPU_dealer.hand[1].PrintCard(self.dealer_card_canvas,180,25)
 
         #dealer takes hits until dealer's hand reaches a total of 17
