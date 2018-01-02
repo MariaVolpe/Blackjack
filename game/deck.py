@@ -72,7 +72,7 @@ class Deck:
         rules_screen = tk.Frame(self.container_frame)
         rules_screen.pack()
 
-        tk.Label(rules_screen, text = "Rules of Blackjack:").pack(anchor="w")
+        tk.Label(rules_screen, text = "Rules of Blackjack:").pack(anchor="w", pady = (100,20))
 
         tk.Label(rules_screen, text = "• Players compete against the dealer: ").pack(anchor="w")
         tk.Label(rules_screen, text = "         • A player's hand's worth is compared against the worth of the dealer's hand.").pack(anchor="w")
@@ -107,9 +107,13 @@ class Deck:
         tk.Label(player_info_frame, text = "How many players?").pack(pady=(253,0), anchor="center")
 
         player_count = tk.IntVar(None, 1)
-        tk.Radiobutton(player_info_frame, text="1", variable=player_count, value=1).pack(anchor="w")
-        tk.Radiobutton(player_info_frame, text="2", variable=player_count, value=2).pack(anchor="w")
-        
+        radio_button1 = tk.Radiobutton(player_info_frame, text="1", variable=player_count, value=1)
+        radio_button1.pack(anchor="w")
+        radio_button2 = tk.Radiobutton(player_info_frame, text="2", variable=player_count, value=2)
+        radio_button2.pack(anchor="w")
+
+        player_info_frame.bind('<Return>', lambda event: self.start_set_player(player_count))
+        player_info_frame.focus_set()
         tk.Button(player_info_frame, text="OK!", command=lambda: self.start_set_player(player_count)).pack()
 
     #gets player names from user(s)
@@ -134,21 +138,24 @@ class Deck:
         labels[0].pack(pady=(253,0))
         e[0].insert(0,"Player {}".format(1))
         e[0].pack()
+        e[0].bind('<Return>', lambda event: self.end_set_player(e))
         if self.num_players == 2:
             labels[1].pack()
             e[1].insert(0,"Player {}".format(2))
             e[1].pack()
+            e[1].bind('<Return>', lambda event: self.end_set_player(e))
 
-        tk.Button(set_player, text="OK!", command=lambda: self.end_set_player(set_player, e)).pack()
+
+        tk.Button(set_player, text="OK!", command=lambda: self.end_set_player(e)).pack()
 
 
     #intializes vector of Player objects with user inputted names from start_set_player()
     #calls begin_game() when finished
-    def end_set_player(self, set_player, e):
+    def end_set_player(self, e):
         for i in range(self.num_players):
             new_player = game.cards_players.Players(e[i].get())
             self.players.append(new_player)
-        set_player.destroy()
+
         self.play_round(1)
     
 
