@@ -1,5 +1,6 @@
-import deck
 import tkinter as tk
+from game import cards_players
+from game import deck
 
 def main():
     root = tk.Tk()

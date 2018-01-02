@@ -11,10 +11,10 @@ class Cards:
     #width of card: 100
     #height of card: 150
     def print_card(self, canvas, x, y):
-        self.spades = tk.PhotoImage(file="images/Spade.gif")
-        self.hearts = tk.PhotoImage(file="images/Heart.gif")
-        self.clubs = tk.PhotoImage(file="images/Club.gif")
-        self.diamonds = tk.PhotoImage(file="images/Diamond.gif")
+        self.spades = tk.PhotoImage(file="game/images/Spade.gif")
+        self.hearts = tk.PhotoImage(file="game/images/Heart.gif")
+        self.clubs = tk.PhotoImage(file="game/images/Club.gif")
+        self.diamonds = tk.PhotoImage(file="game/images/Diamond.gif")
 
         rank_name = {14 : 'K', 13 : 'Q', 12: 'J', 11: 'A'}
         suit_name = {4 : self.spades, 3 : self.hearts, 2: self.clubs, 1: self.diamonds}

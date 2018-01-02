@@ -1,7 +1,6 @@
 import random
-import cards_players
 import tkinter as tk
-
+import game.cards_players
 
 class Deck:
     #constructor
@@ -9,7 +8,7 @@ class Deck:
     def __init__(self, master):
         self.cards_in_deck = []
         self.players = []
-        self.CPU_dealer = cards_players.Players('Dealer')
+        self.CPU_dealer = game.cards_players.Players('Dealer')
         self.master = master
         self.num_players = 0
         
@@ -18,8 +17,8 @@ class Deck:
         self.master.maxsize(width=1024, height=750)
         self.master.tk_setPalette(background='#ddffdd')
 
-        self.display_card1 = cards_players.Cards(3, 13)
-        self.display_card2 = cards_players.Cards(4, 11)
+        self.display_card1 = game.cards_players.Cards(3, 13)
+        self.display_card2 = game.cards_players.Cards(4, 11)
 
         #frame to hold all elements. can be destroyed to quickly clear screen
         self.container_frame = tk.Frame(self.master)
@@ -34,7 +33,7 @@ class Deck:
                 rank_count = 2
                 suit_count += 1
 
-            x = cards_players.Cards(suit_count, rank_count)
+            x = game.cards_players.Cards(suit_count, rank_count)
             self.cards_in_deck.append(x)
 
             rank_count += 1
@@ -46,7 +45,7 @@ class Deck:
         self.container_frame = tk.Frame(self.master)
         self.container_frame.pack()
 
-        self.headerimage = tk.PhotoImage(file="images/header.gif")
+        self.headerimage = tk.PhotoImage(file="game/images/header.gif")
 
         greet_screen = tk.Frame(self.container_frame)
         greet_screen.pack()
@@ -147,7 +146,7 @@ class Deck:
     #calls begin_game() when finished
     def end_set_player(self, set_player, e):
         for i in range(self.num_players):
-            new_player = cards_players.Players(e[i].get())
+            new_player = game.cards_players.Players(e[i].get())
             self.players.append(new_player)
         set_player.destroy()
         self.play_round(1)
