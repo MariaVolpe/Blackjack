@@ -11,17 +11,27 @@ class Cards:
     #width of card: 100
     #height of card: 150
     def PrintCard(self, canvas, x, y):
-        rank_name = {14 : 'King', 13 : 'Queen', 12: 'Jack', 11: 'Ace'}
-        suit_name = {4 : 'Spades', 3 : 'Hearts', 2: 'Clubs', 1: 'Diamonds'}
+        self.spades = tk.PhotoImage(file="Spade.gif")
+        self.hearts = tk.PhotoImage(file="Heart.gif")
+        self.clubs = tk.PhotoImage(file="Club.gif")
+        self.diamonds = tk.PhotoImage(file="Diamond.gif")
+        rank_name = {14 : 'K', 13 : 'Q', 12: 'J', 11: 'A'}
+        suit_name = {4 : self.spades, 3 : self.hearts, 2: self.clubs, 1: self.diamonds}
+
         if self.rank > 10:
             new_card = canvas.create_rectangle(x,y,100+x, 150+y)
-            canvas.create_text((100/2)+x, (150+y)/2, text=rank_name[self.rank])
+            canvas.create_image((100/2)+x, (160+y)/2, image = suit_name[self.suit])
+            canvas.create_text(x+10, y+10, text= rank_name[self.rank])
+            canvas.create_text(x+90, y+140, text= rank_name[self.rank])
             return new_card
         else:
             #print("{} of {}".format(self.rank, suit_name[self.suit]))
             new_card = canvas.create_rectangle(x,y,100+x, 150+y)
-            canvas.create_text((100/2)+x, (150+y)/2, text=self.rank)
+            canvas.create_image((100/2)+x, (160+y)/2, image = suit_name[self.suit])
+            canvas.create_text(x+10, y+10, text=self.rank)
+            canvas.create_text(x+90, y+140, text=self.rank)
             return new_card
+
 class Players:
     
     def __init__(self, name):
