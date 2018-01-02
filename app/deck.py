@@ -46,7 +46,7 @@ class Deck:
         self.container_frame = tk.Frame(self.master)
         self.container_frame.pack()
 
-        self.headerimage = tk.PhotoImage(file="header.gif")
+        self.headerimage = tk.PhotoImage(file="images/header.gif")
 
         greet_screen = tk.Frame(self.container_frame)
         greet_screen.pack()
@@ -579,16 +579,3 @@ class Deck:
                 self.stand_button.pack(side="right")
                 self.hit_button = tk.Button(self.buttons2_frame, text="Hit", command=lambda: self.hit(turn))
                 self.hit_button.pack(side="left")
-
-def main():
-    root = tk.Tk()
-
-    obj = Deck(root)
-    #obj.print_deck()
-    obj.setup_game()
-
-
-    root.mainloop() 
-
-if __name__ == "__main__":
-    main()
