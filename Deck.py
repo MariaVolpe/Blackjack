@@ -12,9 +12,14 @@ class Deck:
         self.CPU_dealer = cards_players.Players('Dealer')
         self.master = master
         self.num_players = 0
+        
+        self.master.title("Blackjack")
+        self.master.minsize(width=1024, height=750)
+        self.master.maxsize(width=1024, height=750)
+        self.master.tk_setPalette(background='#ddffdd')
 
-        self.master.minsize(width=1024, height=760)
-        self.master.maxsize(width=1024, height=760)
+        self.display_card1 = cards_players.Cards(3, 13)
+        self.display_card2 = cards_players.Cards(4, 11)
 
         #frame to hold all elements. can be destroyed to quickly clear screen
         self.container_frame = tk.Frame(self.master)
@@ -40,14 +45,25 @@ class Deck:
         self.container_frame.destroy()
         self.container_frame = tk.Frame(self.master)
         self.container_frame.pack()
-        
+
+        self.headerimage = tk.PhotoImage(file="header.gif")
+
         greet_screen = tk.Frame(self.container_frame)
         greet_screen.pack()
-
-        tk.Label(greet_screen, text = "Welcome to Blackjack!").pack(anchor="center", pady=(50,0))
-        tk.Button(greet_screen, text="Rules", command=self.rules).pack()
-        tk.Button(greet_screen, text="Play", command=self.get_player_info).pack()
         
+        header_canvas = tk.Canvas(greet_screen, width = 500, height = 250)
+        header_canvas.pack(pady=(100,0))
+
+        header_canvas.create_image(0, 0, image = self.headerimage, anchor = "nw")
+    
+        button_canvas = tk.Canvas(greet_screen, width = 350)
+        button_canvas.pack()
+
+        self.display_card1.print_card(button_canvas,15, 25)
+        self.display_card2.print_card(button_canvas,250, 25)
+        tk.Button(greet_screen, text="Rules", width = 7, command=self.rules).pack(side="right",  padx = (0, 85),)
+        tk.Button(greet_screen, text="Play", width = 7, command=self.get_player_info).pack(side="left", padx = (95, 0))
+
         
     def rules(self):
         self.container_frame.destroy()
@@ -58,6 +74,7 @@ class Deck:
         rules_screen.pack()
 
         tk.Label(rules_screen, text = "Rules of Blackjack:").pack(anchor="w")
+
         tk.Label(rules_screen, text = "• Players compete against the dealer: ").pack(anchor="w")
         tk.Label(rules_screen, text = "         • A player's hand's worth is compared against the worth of the dealer's hand.").pack(anchor="w")
         tk.Label(rules_screen, text = "         • Whoever's hand is closest to 21, but not greater than 21, wins.").pack(anchor="w")
@@ -113,6 +130,7 @@ class Deck:
         for i in range(self.num_players):
             labels.append( tk.Label(set_player, text="Player {} Name: ".format(i+1)) )
             e.append( tk.Entry(set_player) )
+            e[i].config(background = "white")
 
         labels[0].pack(pady=(253,0))
         e[0].insert(0,"Player {}".format(1))
@@ -181,7 +199,7 @@ class Deck:
         self.dealer_card_canvas = tk.Canvas(self.dealer_cards_frame, width="1000", height=canvas_height)
         self.dealer_card_canvas.pack()
 
-        self.dealer_card_1 = self.CPU_dealer.hand[0].PrintCard(self.dealer_card_canvas,25,25)
+        self.dealer_card_1 = self.CPU_dealer.hand[0].print_card(self.dealer_card_canvas,25,25)
 
         #30 pixels in between dealer_card_1 and hidden card
         #print dealer card, which is shown face down
@@ -207,7 +225,7 @@ class Deck:
         player1_card_recs = []
         xoffset = 0
         for i, j in enumerate(self.players[0].hand):
-            player1_card_recs.append( j.PrintCard(self.player1_card_canvas,25+xoffset, 25) )
+            player1_card_recs.append( j.print_card(self.player1_card_canvas,25+xoffset, 25) )
                 # width of a card (125) + number of pixels between cards (20)
             xoffset += 155
 
@@ -222,7 +240,7 @@ class Deck:
             player2_card_recs = []
             xoffset = 0
             for i, j in enumerate(self.players[1].hand):
-                player2_card_recs.append( j.PrintCard(self.player2_card_canvas,25+xoffset, 25) )
+                player2_card_recs.append( j.print_card(self.player2_card_canvas,25+xoffset, 25) )
                 # width of a card (125) + number of pixels between cards (20)
                 xoffset += 155
         
@@ -291,13 +309,13 @@ class Deck:
         self.dealer_card_canvas.delete(self.dealer_card_hidden)
         for i in self.lines:
             self.dealer_card_canvas.delete(i)
-        self.dealer_card_hidden = self.CPU_dealer.hand[1].PrintCard(self.dealer_card_canvas,180,25)
+        self.dealer_card_hidden = self.CPU_dealer.hand[1].print_card(self.dealer_card_canvas,180,25)
 
         #dealer takes hits until dealer's hand reaches a total of 17
         dealer_total = self.total_cards(self.CPU_dealer.hand)
         while dealer_total < 17:
             self.CPU_dealer.hand.append(self.draw_card())
-            self.CPU_dealer.hand[-1].PrintCard(self.dealer_card_canvas,25+xoffset, 25)
+            self.CPU_dealer.hand[-1].print_card(self.dealer_card_canvas,25+xoffset, 25)
             xoffset += 155
             dealer_total = self.total_cards(self.CPU_dealer.hand)
         self.dealer_card_canvas.create_text(xoffset+30, 25+145, text="Hand value: {}".format(dealer_total))
@@ -347,12 +365,8 @@ class Deck:
                 self.players[1].wins += 1
                 self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- WIN")
 
-        if self.num_players == 1:
-            next_button = tk.Button(self.buttons1_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
-            next_button.pack(side="right", padx = (910, 0), pady = (130,0))
-        else:
-            next_button = tk.Button(self.buttons2_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
-            next_button.pack(side="right", padx = (910, 0), pady = (40,0))
+        next_button = tk.Button(self.container_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
+        next_button.pack(side="right")
 
 
     #after a round is finished, resets player hands and asks if user will keep playing
@@ -373,10 +387,16 @@ class Deck:
             self.CPU_dealer.hand = []
             self.players[i].hand = []
             
-        keep_playing = tk.Label(keep_playing_frame,text="Play another round?")
-        keep_playing.pack()
-        tk.Button(keep_playing_frame, text="Play Again", command=lambda: self.play_round(1)).pack(side="left")
-        tk.Button(keep_playing_frame, text="Quit", command=self.exit_screen).pack(side="right")
+        keep_playing = tk.Label(keep_playing_frame,text="Play another round?", font=("TkDefaultFont", 35))
+        keep_playing.pack(anchor="center", pady = (150,30))
+        
+        button_canvas = tk.Canvas(keep_playing_frame, width = 500)
+        button_canvas.pack()
+
+        self.display_card1.print_card(button_canvas,5, 25)
+        self.display_card2.print_card(button_canvas,390, 25)
+        tk.Button(keep_playing_frame, text="Play Again", width = 7, command=lambda: self.play_round(1)).pack(side="left",  padx = (10, 0),)
+        tk.Button(keep_playing_frame, text="Quit", width = 7, command=self.exit_screen).pack(side="right", padx = (0, 20))
         
     #ends game and displays scores
     def exit_screen(self):
@@ -404,7 +424,7 @@ class Deck:
         self.dealer_card_canvas.delete(self.dealer_card_hidden)
         for i in self.lines:
             self.dealer_card_canvas.delete(i)
-        self.dealer_card_hidden = self.CPU_dealer.hand[1].PrintCard(self.dealer_card_canvas,180,25)
+        self.dealer_card_hidden = self.CPU_dealer.hand[1].print_card(self.dealer_card_canvas,180,25)
 
         xoffset = 155*(len(self.CPU_dealer.hand))
         self.dealer_card_canvas.create_text(xoffset+30, 25+145, text="- Blackjack!")
@@ -426,12 +446,9 @@ class Deck:
                 else:
                     self.player2_card_canvas.create_text(xoffset+100, 25+145, text="- LOSE")
 
-        if self.num_players == 1:
-            next_button = tk.Button(self.buttons1_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
-            next_button.pack(side="right", padx = (910, 0), pady = (160,0))
-        else:
-            next_button = tk.Button(self.buttons2_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
-            next_button.pack(side="right", padx = (910, 0), pady = (40,0))
+
+        next_button = tk.Button(self.container_frame, text="-->", font=("TkDefaultFont", 25), command =self.end_game)
+        next_button.pack(side="right")
 
 #####
 # utility functions 
@@ -476,11 +493,6 @@ class Deck:
 
         return self.cards_in_deck[i]
 
-    #print suit and rank of entire deck
-    def print_deck(self):
-        for i in range(52):
-            self.cards_in_deck[i].PrintCard()
-
     #reshuffle deck in use by flagging all cards as being in the deck
     def reshuffle(self):
         for i in self.cards_in_deck:
@@ -492,7 +504,7 @@ class Deck:
         total = self.total_cards(self.players[0].hand)
             
         #print new card
-        self.players[0].hand[-1].PrintCard(self.player1_card_canvas,25+xoffset, 25)
+        self.players[0].hand[-1].print_card(self.player1_card_canvas,25+xoffset, 25)
     
         self.stand_button.destroy()
         self.hit_button.destroy()
@@ -528,9 +540,9 @@ class Deck:
             
         #print new card
         if turn == 1:
-            self.players[0].hand[-1].PrintCard(self.player1_card_canvas,25+xoffset, 25)
+            self.players[0].hand[-1].print_card(self.player1_card_canvas,25+xoffset, 25)
         else:
-            self.players[1].hand[-1].PrintCard(self.player2_card_canvas,25+xoffset, 25)
+            self.players[1].hand[-1].print_card(self.player2_card_canvas,25+xoffset, 25)
 
         self.stand_button.destroy()
         self.hit_button.destroy()
