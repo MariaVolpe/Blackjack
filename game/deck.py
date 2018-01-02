@@ -68,11 +68,16 @@ class Deck:
         self.container_frame.destroy()
         self.container_frame = tk.Frame(self.master)
         self.container_frame.pack()
-
+        
+        self.rules_image = tk.PhotoImage(file="game/images/rules.gif")
         rules_screen = tk.Frame(self.container_frame)
         rules_screen.pack()
 
-        tk.Label(rules_screen, text = "Rules of Blackjack:").pack(anchor="w", pady = (100,20))
+        rules_canvas = tk.Canvas(rules_screen, width = 280, height = 150)
+        rules_canvas.pack(pady=(20,0))
+        rules_canvas.create_image(0, 0, image = self.rules_image, anchor = "nw")
+
+        #tk.Label(rules_screen, text = "Rules of Blackjack:", font=("TkDefaultFont", 15)).pack(anchor="w", pady = (100,20))
 
         tk.Label(rules_screen, text = "• Players compete against the dealer: ").pack(anchor="w")
         tk.Label(rules_screen, text = "         • A player's hand's worth is compared against the worth of the dealer's hand.").pack(anchor="w")
@@ -187,7 +192,6 @@ class Deck:
             self.buttons2_frame.pack(side="bottom")
 
             canvas_height = 180
-        
         
         #draw cards
         for i in range(2):
@@ -393,16 +397,22 @@ class Deck:
             self.CPU_dealer.hand = []
             self.players[i].hand = []
             
-        keep_playing = tk.Label(keep_playing_frame,text="Play another round?", font=("TkDefaultFont", 35))
-        keep_playing.pack(anchor="center", pady = (150,30))
+
+        self.play_again_image = tk.PhotoImage(file="game/images/playagain.gif")
+        keep_playing_frame = tk.Frame(self.container_frame)
+        keep_playing_frame.pack()
+
+        play_again_canvas = tk.Canvas(keep_playing_frame, width = 600, height = 200)
+        play_again_canvas.pack(pady=(130,0))
+        play_again_canvas.create_image(40, 0, image = self.play_again_image, anchor = "nw")
         
-        button_canvas = tk.Canvas(keep_playing_frame, width = 500)
+        button_canvas = tk.Canvas(keep_playing_frame, width = 350)
         button_canvas.pack()
 
-        self.display_card1.print_card(button_canvas,5, 25)
-        self.display_card2.print_card(button_canvas,390, 25)
-        tk.Button(keep_playing_frame, text="Play Again", width = 7, command=lambda: self.play_round(1)).pack(side="left",  padx = (10, 0),)
-        tk.Button(keep_playing_frame, text="Quit", width = 7, command=self.exit_screen).pack(side="right", padx = (0, 20))
+        self.display_card1.print_card(button_canvas,10, 25)
+        self.display_card2.print_card(button_canvas,250, 25)
+        tk.Button(keep_playing_frame, text="Play Again", width = 7, command=lambda: self.play_round(1)).pack(side="left",  padx = (140, 0))
+        tk.Button(keep_playing_frame, text="Quit", width = 7, command=self.exit_screen).pack(side="right", padx = (0, 135))
         
     #ends game and displays scores
     def exit_screen(self):
@@ -413,7 +423,7 @@ class Deck:
         exit_screen.pack()
 
         #display scores
-        tk.Label(exit_screen, text="Thanks for playing!").pack(pady=(0,50))
+        tk.Label(exit_screen, text="Thanks for playing!",font=("TkDefaultFont", 25)).pack(pady=(0,50))
         tk.Label(exit_screen, text="Final score: ").pack()
 
         for i in range(self.num_players):
