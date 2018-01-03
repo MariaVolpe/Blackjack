@@ -24,8 +24,6 @@ class Deck:
         self.container_frame = tk.Frame(self.master)
         self.container_frame.pack()
 
-        self.card_count = 0
-
         rank_count = 2
         suit_count = 1
         for i in range(52):
@@ -95,7 +93,6 @@ class Deck:
         tk.Label(rules_screen, text = "• Numbered cards are worth their face value.").pack(anchor="w")
         tk.Label(rules_screen, text = "• Jacks, Queens, and Kings are worth 10.").pack(anchor="w")
         tk.Label(rules_screen, text = "• An Ace is worth either 1 or 11, depending on which value is more advantageous.").pack(anchor="w")
-        tk.Label(rules_screen, text = "• The deck reshuffles after 50% of it has been used.").pack(anchor="w")
         tk.Label(rules_screen, text = "• This game uses a S17 rule for the dealer:").pack(anchor="w")
         tk.Label(rules_screen, text = "         • The dealer will stand if their hand value is 17 or above.").pack(anchor="w")
 
@@ -168,6 +165,8 @@ class Deck:
     #for a two player game, if turn == 1 it is player 1's turn
     #if turn == 2 it is player 2's turn
     def play_round(self, turn):
+
+        self.reset_deck()
 
         self.container_frame.destroy()
         self.container_frame = tk.Frame(self.master)
@@ -424,12 +423,12 @@ class Deck:
 
         #display scores
         tk.Label(exit_screen, text="Thanks for playing!",font=("TkDefaultFont", 25)).pack(pady=(0,50))
-        tk.Label(exit_screen, text="Final score: ").pack()
+        tk.Label(exit_screen, text="Final score: ").pack(anchor="w")
 
         for i in range(self.num_players):
-            tk.Label(exit_screen, text="Player {}:".format(i+1)).pack()
-            tk.Label(exit_screen, text="Wins: {}".format(self.players[i].wins) ).pack()
-            tk.Label(exit_screen, text="Losses: {}".format(self.players[i].losses) ).pack(pady=(0,20))
+            tk.Label(exit_screen, text="Player {}:".format(i+1)).pack(anchor="w", padx = (40,0))
+            tk.Label(exit_screen, text="Wins: {}".format(self.players[i].wins), anchor="w").pack(anchor="w", padx = (40,0))
+            tk.Label(exit_screen, text="Losses: {}".format(self.players[i].losses)).pack(pady=(0,20), anchor="w")
 
         #quit button
         tk.Button(exit_screen, text="Quit", command=self.master.destroy).pack()
@@ -494,7 +493,6 @@ class Deck:
 
     #returns a random card out of the cards_in_deck
     #if card is not marked as in the deck in play, another index is generated
-    #if more than 26 cards (50% of deck) have been drawn, reset the deck
     def draw_card(self):
         random.seed(a=None, version=2)
         condition = False
@@ -503,24 +501,34 @@ class Deck:
             condition = self.cards_in_deck[i].in_deck
         self.cards_in_deck[i].in_deck = False
 
-        self.card_count += 1
-        if self.card_count > 26:
-            self.reshuffle()
-
         return self.cards_in_deck[i]
 
-    #reshuffle deck in use by flagging all cards as being in the deck
-    def reshuffle(self):
+    #reset deck in use by flagging all cards as being in the deck
+    def reset_deck(self):
         for i in self.cards_in_deck:
             i.in_deck = True
 
     def hit_p1(self):
         xoffset = 155*len(self.players[0].hand)
         self.players[0].hand.append(self.draw_card())
-        total = self.total_cards(self.players[0].hand)
-            
-        #print new card
+
+        # #if number of cards go off screen, dont show all cards but add value label
+        # if len(self.players[0].hand) > 5:
+        #     self.player1_card_canvas.delete("all")
+        #     #show first card
+        #     self.players[0].hand[0].print_card(self.player1_card_canvas,25, 25)
+        #     #show last 2 cards
+        #     self.player1_card_canvas.create_text(25+(155/2), 25+145, text="...")
+        #     self.players[0].hand[-2].print_card(self.player1_card_canvas,25+(155*2), 25)
+        #     self.players[0].hand[-1].print_card(self.player1_card_canvas,25+(155*3), 25)
+        #     self.player1_card_canvas.create_text(xoffset+30, 25+145, text="Hand value: {}".format(total))
+
+        # else:
+        #     #print new card
         self.players[0].hand[-1].print_card(self.player1_card_canvas,25+xoffset, 25)
+
+
+        total = self.total_cards(self.players[0].hand)
     
         self.stand_button.destroy()
         self.hit_button.destroy()
