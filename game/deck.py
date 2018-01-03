@@ -330,12 +330,19 @@ class Deck:
         self.dealer_card_canvas.create_text(xoffset+30, 25+145, text="Hand value: {}".format(dealer_total))
 
         p1_total = self.total_cards(self.players[0].hand)
-        xoffset = 155*(len(self.players[0].hand))
+        if len(self.players[0].hand) > 5:
+            xoffset = 155*4
+        else:
+            xoffset = 155*(len(self.players[0].hand))
+
         self.player1_card_canvas.create_text(xoffset+30, 25+145, text="Hand value: {}".format(p1_total))
 
         if self.num_players == 2:
             p2_total = self.total_cards(self.players[1].hand)
-            xoffset = 155*(len(self.players[1].hand))
+            if len(self.players[1].hand) > 5:
+                xoffset = 155*4
+            else:
+                xoffset = 155*(len(self.players[1].hand))
             self.player2_card_canvas.create_text(xoffset+30, 25+145, text="Hand value: {}".format(p2_total))
 
         if dealer_total > 21:
@@ -503,6 +510,12 @@ class Deck:
 
         return self.cards_in_deck[i]
 
+
+    def draw_card_test(self):
+        self.new_card = game.cards_players.Cards(3, 2)
+
+        return self.new_card
+
     #reset deck in use by flagging all cards as being in the deck
     def reset_deck(self):
         for i in self.cards_in_deck:
@@ -511,24 +524,29 @@ class Deck:
     def hit_p1(self):
         xoffset = 155*len(self.players[0].hand)
         self.players[0].hand.append(self.draw_card())
-
-        # #if number of cards go off screen, dont show all cards but add value label
-        # if len(self.players[0].hand) > 5:
-        #     self.player1_card_canvas.delete("all")
-        #     #show first card
-        #     self.players[0].hand[0].print_card(self.player1_card_canvas,25, 25)
-        #     #show last 2 cards
-        #     self.player1_card_canvas.create_text(25+(155/2), 25+145, text="...")
-        #     self.players[0].hand[-2].print_card(self.player1_card_canvas,25+(155*2), 25)
-        #     self.players[0].hand[-1].print_card(self.player1_card_canvas,25+(155*3), 25)
-        #     self.player1_card_canvas.create_text(xoffset+30, 25+145, text="Hand value: {}".format(total))
-
-        # else:
-        #     #print new card
-        self.players[0].hand[-1].print_card(self.player1_card_canvas,25+xoffset, 25)
-
-
         total = self.total_cards(self.players[0].hand)
+
+        #if number of cards go off screen, dont show all cards but add value label
+        if len(self.players[0].hand) > 5:
+            self.player1_card_canvas.delete("all")
+            #show first card
+            self.players[0].hand[0].print_card(self.player1_card_canvas,25, 25)
+
+            self.player1_card_canvas.create_text(10+155, 25+145, text="...")
+            yoffset = 0
+            for i in self.players[0].hand:
+                i.print_card_text(self.player1_card_canvas,25+(155), 30+yoffset)
+                yoffset += 20
+            self.player1_card_canvas.create_text(145+(155), 25+145, text="...")
+            
+            #show last 2 cards
+            self.players[0].hand[-2].print_card(self.player1_card_canvas,25+(155*2), 25)
+            self.players[0].hand[-1].print_card(self.player1_card_canvas,25+(155*3), 25)
+
+        else:
+            #print new card
+            self.players[0].hand[-1].print_card(self.player1_card_canvas,25+xoffset, 25)
+
     
         self.stand_button.destroy()
         self.hit_button.destroy()
@@ -553,7 +571,6 @@ class Deck:
             self.hit_button.pack(side="left")
 
 
-
     #logic for if a player chooses a hit
     #draw a card and add it to player's hand
     #allow player to continue choosing to hit until player busts
@@ -561,12 +578,48 @@ class Deck:
         xoffset = 155*len(self.players[turn-1].hand)
         self.players[turn-1].hand.append(self.draw_card())
         total = self.total_cards(self.players[turn-1].hand)
-            
+
         #print new card
         if turn == 1:
-            self.players[0].hand[-1].print_card(self.player1_card_canvas,25+xoffset, 25)
+            if len(self.players[0].hand) > 5:
+                self.player1_card_canvas.delete("all")
+            #show first card
+                self.players[0].hand[0].print_card(self.player1_card_canvas,25, 25)
+
+                self.player1_card_canvas.create_text(10+155, 25+145, text="...")
+                yoffset = 0
+                for i in self.players[0].hand:
+                    i.print_card_text(self.player1_card_canvas,25+(155), 30+yoffset)
+                    yoffset += 20
+                self.player1_card_canvas.create_text(145+(155), 25+145, text="...")
+            
+                #show last 2 cards
+                self.players[0].hand[-2].print_card(self.player1_card_canvas,25+(155*2), 25)
+                self.players[0].hand[-1].print_card(self.player1_card_canvas,25+(155*3), 25)
+
+            else:
+                #print new card
+                self.players[0].hand[-1].print_card(self.player1_card_canvas,25+xoffset, 25)
         else:
-            self.players[1].hand[-1].print_card(self.player2_card_canvas,25+xoffset, 25)
+            if len(self.players[1].hand) > 5:
+                self.player2_card_canvas.delete("all")
+            #show first card
+                self.players[1].hand[0].print_card(self.player2_card_canvas,25, 25)
+
+                self.player2_card_canvas.create_text(10+155, 25+145, text="...")
+                yoffset = 0
+                for i in self.players[1].hand:
+                    i.print_card_text(self.player2_card_canvas,25+(155), 30+yoffset)
+                    yoffset += 20
+                self.player2_card_canvas.create_text(145+(155), 25+145, text="...")
+            
+            #show last 2 cards
+                self.players[1].hand[-2].print_card(self.player2_card_canvas,25+(155*2), 25)
+                self.players[1].hand[-1].print_card(self.player2_card_canvas,25+(155*3), 25)
+
+            else:
+            #print new card
+                self.players[1].hand[-1].print_card(self.player2_card_canvas,25+xoffset, 25)
 
         self.stand_button.destroy()
         self.hit_button.destroy()

@@ -26,12 +26,22 @@ class Cards:
             canvas.create_text(x+90, y+140, text= rank_name[self.rank])
             return new_card
         else:
-            #print("{} of {}".format(self.rank, suit_name[self.suit]))
             new_card = canvas.create_rectangle(x,y,100+x, 150+y, fill = "white")
             canvas.create_image((100/2)+x, (160+y)/2, image = suit_name[self.suit])
             canvas.create_text(x+10, y+10, text=self.rank)
             canvas.create_text(x+90, y+140, text=self.rank)
             return new_card
+
+    def print_card_text(self, canvas, x, y):
+
+        rank_name = {14 : 'King', 13 : 'Queen', 12: 'Jack', 11: 'Ace'}
+        suit_name = {4 : "Spades", 3 : "Hearts", 2: "Clubs", 1: "Diamonds"}
+
+        if self.rank > 10:
+            canvas.create_text((100/2)+x, y, text = "{} of {}".format(rank_name[self.rank], suit_name[self.suit]))
+        else:
+            canvas.create_text((100/2)+x, y, text = "{} of {}".format(self.rank, suit_name[self.suit]))
+
 
 class Players:
     
