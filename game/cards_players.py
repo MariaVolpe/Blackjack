@@ -7,7 +7,7 @@ class Cards:
         self.rank = rank
         self.in_deck = True
 
-    #print card
+    #print card on canvas passed as argument
     #width of card: 100
     #height of card: 150
     def print_card(self, canvas, x, y):
@@ -32,6 +32,7 @@ class Cards:
             canvas.create_text(x+90, y+140, text=self.rank)
             return new_card
 
+    #print rank and suit of card as text on canvas provided
     def print_card_text(self, canvas, x, y):
 
         rank_name = {14 : 'King', 13 : 'Queen', 12: 'Jack', 11: 'Ace'}

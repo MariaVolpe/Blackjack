@@ -61,7 +61,7 @@ class Deck:
         tk.Button(greet_screen, text="Rules", width = 7, command=self.rules).pack(side="right",  padx = (0, 85),)
         tk.Button(greet_screen, text="Play", width = 7, command=self.get_player_info).pack(side="left", padx = (95, 0))
 
-        
+    #display rules page
     def rules(self):
         self.container_frame.destroy()
         self.container_frame = tk.Frame(self.master)
@@ -98,6 +98,7 @@ class Deck:
 
         tk.Button(rules_screen, text="Back", command=self.setup_game).pack()
 
+    #gets number of players from user(s)
     def get_player_info(self):
         self.container_frame.destroy()
         self.container_frame = tk.Frame(self.master)
@@ -218,7 +219,6 @@ class Deck:
         #draw back of card
         self.lines=[]
         self.lines.append(self.dealer_card_canvas.create_line(180+75, 25, 180+100, 25+(75/2), fill="light blue"))
-        #self.dealer_card_canvas.create_line(180, 25, 180+100, 25+150, fill="light blue")
         self.lines.append(self.dealer_card_canvas.create_line(180+25, 25, 180+100, 25+75+(75/2), fill="light blue"))
         self.lines.append(self.dealer_card_canvas.create_line(180, 25+75, 180+50, 25+150, fill="light blue"))
         self.lines.append(self.dealer_card_canvas.create_line(180+50, 25, 180+100, 25+75, fill="light blue"))
@@ -235,7 +235,7 @@ class Deck:
         xoffset = 0
         for i, j in enumerate(self.players[0].hand):
             player1_card_recs.append( j.print_card(self.player1_card_canvas,25+xoffset, 25) )
-                # width of a card (125) + number of pixels between cards (20)
+            # width of a card (125) + number of pixels between cards (20)
             xoffset += 155
 
         if self.num_players == 2:
@@ -428,17 +428,26 @@ class Deck:
         exit_screen = tk.Frame(self.master)
         exit_screen.pack()
 
+        self.thanks_image = tk.PhotoImage(file="game/images/thanks.gif")
+
+        thanks_canvas = tk.Canvas(exit_screen, width = 600, height = 200)
+        thanks_canvas.pack(pady=(130,0))
+        thanks_canvas.create_image(0, 0, image = self.thanks_image, anchor = "nw")
+
+        score_frame = tk.Frame(self.master)
+        score_frame.pack()
+
         #display scores
-        tk.Label(exit_screen, text="Thanks for playing!",font=("TkDefaultFont", 25)).pack(pady=(0,50))
-        tk.Label(exit_screen, text="Final score: ").pack(anchor="w")
+        #tk.Label(exit_screen, text="Thanks for playing!",font=("TkDefaultFont", 25)).pack(pady=(0,50))
+        tk.Label(score_frame, text="Final score: ", font=("TkDefaultFont", 15)).pack(anchor="w", padx=(0,130))
 
         for i in range(self.num_players):
-            tk.Label(exit_screen, text="Player {}:".format(i+1)).pack(anchor="w", padx = (40,0))
-            tk.Label(exit_screen, text="Wins: {}".format(self.players[i].wins), anchor="w").pack(anchor="w", padx = (40,0))
-            tk.Label(exit_screen, text="Losses: {}".format(self.players[i].losses)).pack(pady=(0,20), anchor="w")
+            tk.Label(score_frame, text="Player {}:".format(i+1)).pack(anchor="w", padx = (80,0))
+            tk.Label(score_frame, text="Wins: {}".format(self.players[i].wins), anchor="w").pack(anchor="w", padx = (80,0))
+            tk.Label(score_frame, text="Losses: {}".format(self.players[i].losses)).pack(padx=(80,0), pady = (0,20), anchor="w")
 
         #quit button
-        tk.Button(exit_screen, text="Quit", command=self.master.destroy).pack()
+        tk.Button(score_frame, text="Quit", command=self.master.destroy).pack()
         
     
     def dealer_blackjack(self):
